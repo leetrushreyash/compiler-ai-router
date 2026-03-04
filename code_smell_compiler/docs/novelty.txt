@@ -1,0 +1,22 @@
+
+Novelty and key contributions
+
+This project presents several practical contributions:
+
+1) Compiler-like processing pipeline
+The analyzer is organized as sequential phases: parsing to AST, rule-based and metric extraction, feature construction, ML-based classification, and reporting. This modular design simplifies extension and testing.
+
+2) Combination of deterministic rules and ML
+Deterministic rule-based detectors are used for high-confidence issues, while small ML models generalize pattern correlations from labeled examples to detect less obvious smells.
+
+3) Synthetic labeled dataset
+A configurable generator creates synthetic Python samples with labeled smells, enabling local model training without external corpora.
+
+4) Actionable localization
+Findings include line numbers and suggested fixes to facilitate quick remediation.
+
+5) Lightweight, reproducible models
+The use of scikit-learn classifiers enables fast local training and inference, making the system suitable for laptop-level experimentation and CI integration.
+
+Limitations and evaluation
+The synthetic dataset supports demonstration and prototyping but should be supplemented with real-world labeled samples for production use. Evaluation should include cross-validation on the synthetic data and manual inspection of results on real codebases to assess generalization.

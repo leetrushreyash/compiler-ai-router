@@ -1,0 +1,37 @@
+Architecture overview
+
+This section describes the main components and data flow of the system.
+
+CLI (main.py)
+The command-line interface accepts a file or directory path and coordinates the analysis pipeline. It optionally loads trained ML models and aggregates per-file findings into a JSON report.
+
+Parser (parser/parser.py)
+The parser uses `ast.parse()` to convert source text to an AST and returns the AST along with the original source for mapping purposes.
+
+AST helpers (ast_analysis/ast_utils.py)
+This module implements helper functions that inspect AST nodes and return metrics or locations. Examples include `function_length`, `max_nesting`, `uses_eval_exec`, `find_hardcoded_secrets`, `find_exception_swallowing`, and `detect_duplicate_functions`.
+
+Feature extraction (feature_extraction/extractor.py)
+This component maps AST observations into a feature dictionary and returns location lists for each detected smell. The feature dictionary is used by the ML models.
+
+Rule-based analyzer (static_analyzer/rule_based.py)
+Deterministic findings are produced from features and locations, with associated severity values and suggested fixes.
+
+ML components (ml_model/)
+The `dataset.py` module generates synthetic labeled Python samples. The `train.py` script trains multi-output classifiers and persists them in `models.pkl`. At runtime, the loaded models provide per-smell confidence scores that are merged into final findings.
+
+Reporting (reporting/report.py)
+Reporting formats findings as JSON objects containing `file`, `line_number`, `smell_type`, `severity`, `confidence`, and `suggested_fix`.
+
+Data flow
+The pipeline executes as follows: parsing → AST analysis → feature extraction → rule-based detection → (optional) ML prediction → aggregation → reporting.
+
+Extensibility note
+To add a new smell, implement detection logic in `ast_analysis`, add the corresponding feature extraction, update the synthetic data generator for labels, and add severity and fix suggestions in `static_analyzer`.
+
+Data flow: Source files → Parser → AST Analysis → Feature Extraction → Rule-based checks & ML prediction → Findings aggregation → Report output.
+
+Extension points:
+- Add new AST rules or features in `ast_analysis` and `feature_extraction`.
+- Replace ML models or add deep-learning modules in `ml_model`.
+- Integrate CI via a runner that executes `main.py` during PR checks and uploads `report.json` or SARIF.

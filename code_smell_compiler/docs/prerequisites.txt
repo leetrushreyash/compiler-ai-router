@@ -1,0 +1,45 @@
+Prerequisites and setup
+
+Summary
+This project is compatible with Windows, macOS, and Linux. It was developed on Windows with Python 3.14; the code is expected to work with Python 3.8 and later.
+
+Required software
+Install Python 3.10 or later. On Windows, use the `py` launcher (for example `py -3`). Ensure that `pip` is available for package installation. It is recommended to use a virtual environment to isolate project dependencies.
+
+System resources
+Allocate at least 200 MB of disk space for the virtual environment and packages. For small training runs a minimum of 4 GB of RAM should suffice; larger datasets require more memory.
+
+Setup steps (PowerShell)
+Execute the following commands to prepare the environment, install dependencies, train models, and run the analyzer:
+```powershell
+cd "C:\Users\SHREYASH SHARMA\compiler"
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+py -3 -m pip install --upgrade pip
+py -3 -m pip install -r .\code_smell_compiler\requirements.txt
+py -3 .\train_model.py
+py -3 -m code_smell_compiler.main examples --use-ml
+```
+
+PATH guidance
+If the Python `Scripts` directory is not on PATH and you receive a warning, add it temporarily within PowerShell as follows, or add it permanently via system settings:
+```powershell
+$env:Path += ";C:\Users\<YourUser>\AppData\Local\Python\pythoncore-3.14-64\Scripts"
+```
+
+Additional notes
+If binary packages such as `scipy` fail to build from source, install prebuilt wheels or use an official Python distribution that provides precompiled extensions. The synthetic dataset generator writes files to `code_smell_compiler/data/`; the analyzer inspects these files as source and does not execute them.
+
+Recommended development tools
+Consider installing `pytest` for unit testing, `flake8` or `ruff` for linting, and `pre-commit` for automated checks during development.
+
+Core Python packages (install via `pip install -r code_smell_compiler/requirements.txt`)
+numpy
+pandas
+scikit-learn
+joblib
+
+Optional packages for enhancements
+pytest
+matplotlib
+jupyter

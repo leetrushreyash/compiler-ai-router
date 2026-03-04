@@ -1,0 +1,1104 @@
+{
+  "findings": [
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Refactor into smaller methods or helpers."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "deep_nesting",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Reduce nesting by early returns or helper functions."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 94,
+      "smell_type": "unsafe_eval_exec",
+      "severity": "high",
+      "confidence": 1.0,
+      "suggested_fix": "Avoid eval/exec; use safer alternatives."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 26,
+      "smell_type": "exception_swallowing",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Handle exceptions explicitly or log them."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 103,
+      "smell_type": "duplicate_code_blocks",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Deduplicate code by extracting shared functions."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 99,
+      "smell_type": "duplicate_code_blocks",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Deduplicate code by extracting shared functions."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 0.93,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "deep_nesting",
+      "severity": "medium",
+      "confidence": 0.83,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 94,
+      "smell_type": "unsafe_eval_exec",
+      "severity": "medium",
+      "confidence": 0.78,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 26,
+      "smell_type": "exception_swallowing",
+      "severity": "medium",
+      "confidence": 0.75,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 103,
+      "smell_type": "duplicate_code_blocks",
+      "severity": "medium",
+      "confidence": 0.8,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\data_class_example.py",
+      "line_number": 1,
+      "smell_type": "data_class",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Add behavior or consolidate data into richer domain objects."
+    },
+    {
+      "file": "examples\\data_class_example.py",
+      "line_number": 1,
+      "smell_type": "data_class",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\feature_envy_example.py",
+      "line_number": 11,
+      "smell_type": "feature_envy",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Move the method closer to the data it uses or pass data in."
+    },
+    {
+      "file": "examples\\feature_envy_example.py",
+      "line_number": 11,
+      "smell_type": "feature_envy",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\god_class_example.py",
+      "line_number": 1,
+      "smell_type": "god_class",
+      "severity": "high",
+      "confidence": 1.0,
+      "suggested_fix": "Split class responsibilities into smaller cohesive classes."
+    },
+    {
+      "file": "examples\\god_class_example.py",
+      "line_number": 1,
+      "smell_type": "god_class",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\long_method_example.py",
+      "line_number": 1,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Refactor into smaller methods or helpers."
+    },
+    {
+      "file": "examples\\long_method_example.py",
+      "line_number": 1,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    }
+  ],
+  "refactorings": [
+    {
+      "smell_type": "long_method",
+      "description": "Extract second half of 'process_transaction_log' (74 lines) into helper '_process_transaction_log_part2'.",
+      "original": "def process_transaction_log(log_data):\n    \"\"\"\n    Simulates a long method with a nested loop.\n    Contains: Long Method, Deep Nesting, Nested Loops, Exception Swallowing.\n    \"\"\"\n    results = []\n    \n    # Nested loops and Deep Nesting\n    if log_data:\n        for entry in log_data:\n            if entry.get(\"status\") == \"success\":\n                for item in entry.get(\"items\", []):\n                    if item.get(\"price\", 0) > 100:\n                        try:\n                            # Do some fake processing\n                            discount = item[\"price\"] * 0.1\n                            total = item[\"price\"] - discount\n                            results.append({\"id\": item[\"id\"], \"total\": total})\n                        except Exception:\n                            # Rule: Exception Swallowing\n                            pass\n                            \n    # Artificially expand to trigger Long Method (>50 lines) using realistic patterns\n    default_config = {\n        \"timeout\": 30,\n        \"retries\": 3,\n        \"fallback\": True,\n        \"logging_level\": \"DEBUG\",\n        \"max_connections\": 100,\n        \"use_ssl\": True\n    }\n    \n    config_validation = []\n    config_validation.append(default_config[\"timeout\"] > 0)\n    config_validation.append(default_config[\"retries\"] >= 0)\n    config_validation.append(isinstance(default_config[\"fallback\"], bool))\n    config_validation.append(default_config[\"logging_level\"] in [\"INFO\", \"DEBUG\", \"ERROR\"])\n    config_validation.append(default_config[\"max_connections\"] <= 1000)\n    config_validation.append(isinstance(default_config[\"use_ssl\"], bool))\n    \n    temp_buffer = []\n    temp_buffer.append(\"Initializing metrics tracking...\")\n    temp_buffer.append(\"Connecting to database...\")\n    temp_buffer.append(\"Validating schema...\")\n    temp_buffer.append(\"Checking connection pool...\")\n    temp_buffer.append(\"Setting up cache layers...\")\n    temp_buffer.append(\"Preparing background workers...\")\n    \n    current_time = datetime.now()\n    formatted_time = current_time.strftime(\"%Y-%m-%d %H:%M:%S\")\n    \n    system_status = {\n        \"timestamp\": formatted_time,\n        \"processed_count\": len(results),\n        \"buffer_size\": len(temp_buffer),\n        \"config_valid\": all(config_validation),\n        \"memory_usage\": \"256MB\",\n        \"cpu_usage\": \"45%\",\n        \"uptime\": \"14 days\",\n        \"region\": \"us-east-1\"\n    }\n    \n    # Just printing to ensure statements exist\n    if system_status[\"processed_count\"] > 0:\n        print(\"Success: Log processed.\")\n    else:\n        print(\"Warning: No items processed.\")\n        \n    for k, v in system_status.items():\n        if k == \"timestamp\":\n            pass\n        elif k == \"region\":\n            pass\n\n    return {\n        \"status\": \"completed\",\n        \"data\": results,\n        \"metadata\": system_status\n    }\n",
+      "refactored": "def process_transaction_log(log_data):\n    \"\"\"\n    Simulates a long method with a nested loop.\n    Contains: Long Method, Deep Nesting, Nested Loops, Exception Swallowing.\n    \"\"\"\n    results = []\n    \n    # Nested loops and Deep Nesting\n    if log_data:\n        for entry in log_data:\n            if entry.get(\"status\") == \"success\":\n                for item in entry.get(\"items\", []):\n                    if item.get(\"price\", 0) > 100:\n                        try:\n                            # Do some fake processing\n                            discount = item[\"price\"] * 0.1\n                            total = item[\"price\"] - discount\n                            results.append({\"id\": item[\"id\"], \"total\": total})\n                        except Exception:\n                            # Rule: Exception Swallowing\n                            pass\n                            \n    # Artificially expand to trigger Long Method (>50 lines) using realistic patterns\n    default_config = {\n        \"timeout\": 30,\n        \"retries\": 3,\n        \"fallback\": True,\n        \"logging_level\": \"DEBUG\",\n        \"max_connections\": 100,\n        \"use_ssl\": True\n    }\n    \n    config_validation = []\n    config_validation.append(default_config[\"timeout\"] > 0)\n    config_validation.append(default_config[\"retries\"] >= 0)\n    config_validation.append(isinstance(default_config[\"fallback\"], bool))\n    config_validation.append(default_config[\"logging_level\"] in [\"INFO\", \"DEBUG\", \"ERROR\"])\n    config_validation.append(default_config[\"max_connections\"] <= 1000)\n    config_validation.append(isinstance(default_config[\"use_ssl\"], bool))\n    \n    _process_transaction_log_part2()\n\ndef _process_transaction_log_part2():\n    temp_buffer = []\n    temp_buffer.append(\"Initializing metrics tracking...\")\n    temp_buffer.append(\"Connecting to database...\")\n    temp_buffer.append(\"Validating schema...\")\n    temp_buffer.append(\"Checking connection pool...\")\n    temp_buffer.append(\"Setting up cache layers...\")\n    temp_buffer.append(\"Preparing background workers...\")\n\n    current_time = datetime.now()\n    formatted_time = current_time.strftime(\"%Y-%m-%d %H:%M:%S\")\n\n    system_status = {\n        \"timestamp\": formatted_time,\n        \"processed_count\": len(results),\n        \"buffer_size\": len(temp_buffer),\n        \"config_valid\": all(config_validation),\n        \"memory_usage\": \"256MB\",\n        \"cpu_usage\": \"45%\",\n        \"uptime\": \"14 days\",\n        \"region\": \"us-east-1\"\n    }\n\n    # Just printing to ensure statements exist\n    if system_status[\"processed_count\"] > 0:\n        print(\"Success: Log processed.\")\n    else:\n        print(\"Warning: No items processed.\")\n\n    for k, v in system_status.items():\n        if k == \"timestamp\":\n            pass\n        elif k == \"region\":\n            pass\n\n    return {\n        \"status\": \"completed\",\n        \"data\": results,\n        \"metadata\": system_status\n    }\n\n",
+      "diff": "--- a/long_method:process_transaction_log+++ b/long_method:process_transaction_log@@ -38,6 +38,9 @@     config_validation.append(default_config[\"max_connections\"] <= 1000)\n     config_validation.append(isinstance(default_config[\"use_ssl\"], bool))\n     \n+    _process_transaction_log_part2()\n+\n+def _process_transaction_log_part2():\n     temp_buffer = []\n     temp_buffer.append(\"Initializing metrics tracking...\")\n     temp_buffer.append(\"Connecting to database...\")\n@@ -45,10 +48,10 @@     temp_buffer.append(\"Checking connection pool...\")\n     temp_buffer.append(\"Setting up cache layers...\")\n     temp_buffer.append(\"Preparing background workers...\")\n-    \n+\n     current_time = datetime.now()\n     formatted_time = current_time.strftime(\"%Y-%m-%d %H:%M:%S\")\n-    \n+\n     system_status = {\n         \"timestamp\": formatted_time,\n         \"processed_count\": len(results),\n@@ -59,13 +62,13 @@         \"uptime\": \"14 days\",\n         \"region\": \"us-east-1\"\n     }\n-    \n+\n     # Just printing to ensure statements exist\n     if system_status[\"processed_count\"] > 0:\n         print(\"Success: Log processed.\")\n     else:\n         print(\"Warning: No items processed.\")\n-        \n+\n     for k, v in system_status.items():\n         if k == \"timestamp\":\n             pass\n@@ -77,3 +80,4 @@         \"data\": results,\n         \"metadata\": system_status\n     }\n+\n",
+      "line_start": 8,
+      "line_end": 86,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "exception_swallowing",
+      "description": "Replace bare 'except: pass' at line 26 with logging.exception().",
+      "original": "                        except Exception:\n                            # Rule: Exception Swallowing\n                            pass\n",
+      "refactored": "                        except Exception as e:\n                            import logging\n                            logging.exception(\"Caught exception: %s\", e)\n",
+      "diff": "--- a/exception_swallowing+++ b/exception_swallowing@@ -1,3 +1,3 @@-                        except Exception:\n-                            # Rule: Exception Swallowing\n-                            pass\n+                        except Exception as e:\n+                            import logging\n+                            logging.exception(\"Caught exception: %s\", e)\n",
+      "line_start": 26,
+      "line_end": 28,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "unsafe_eval_exec",
+      "description": "Replace unsafe 'eval()' at line 94 with safer alternative.",
+      "original": "        computed_value = eval(user_payload.get(\"math_formula\", \"0\"))\n",
+      "refactored": "import ast as _ast\n        computed_value = _ast.literal_eval(user_payload.get(\"math_formula\", \"0\"))\n",
+      "diff": "--- a/unsafe_eval+++ b/unsafe_eval@@ -1 +1,2 @@-        computed_value = eval(user_payload.get(\"math_formula\", \"0\"))\n+import ast as _ast\n+        computed_value = _ast.literal_eval(user_payload.get(\"math_formula\", \"0\"))\n",
+      "line_start": 94,
+      "line_end": 94,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "deep_nesting",
+      "description": "Flatten deep nesting (depth=6) in 'process_transaction_log' using guard clauses.",
+      "original": "def process_transaction_log(log_data):\n    \"\"\"\n    Simulates a long method with a nested loop.\n    Contains: Long Method, Deep Nesting, Nested Loops, Exception Swallowing.\n    \"\"\"\n    results = []\n    \n    # Nested loops and Deep Nesting\n    if log_data:\n        for entry in log_data:\n            if entry.get(\"status\") == \"success\":\n                for item in entry.get(\"items\", []):\n                    if item.get(\"price\", 0) > 100:\n                        try:\n                            # Do some fake processing\n                            discount = item[\"price\"] * 0.1\n                            total = item[\"price\"] - discount\n                            results.append({\"id\": item[\"id\"], \"total\": total})\n                        except Exception:\n                            # Rule: Exception Swallowing\n                            pass\n                            \n    # Artificially expand to trigger Long Method (>50 lines) using realistic patterns\n    default_config = {\n        \"timeout\": 30,\n        \"retries\": 3,\n        \"fallback\": True,\n        \"logging_level\": \"DEBUG\",\n        \"max_connections\": 100,\n        \"use_ssl\": True\n    }\n    \n    config_validation = []\n    config_validation.append(default_config[\"timeout\"] > 0)\n    config_validation.append(default_config[\"retries\"] >= 0)\n    config_validation.append(isinstance(default_config[\"fallback\"], bool))\n    config_validation.append(default_config[\"logging_level\"] in [\"INFO\", \"DEBUG\", \"ERROR\"])\n    config_validation.append(default_config[\"max_connections\"] <= 1000)\n    config_validation.append(isinstance(default_config[\"use_ssl\"], bool))\n    \n    temp_buffer = []\n    temp_buffer.append(\"Initializing metrics tracking...\")\n    temp_buffer.append(\"Connecting to database...\")\n    temp_buffer.append(\"Validating schema...\")\n    temp_buffer.append(\"Checking connection pool...\")\n    temp_buffer.append(\"Setting up cache layers...\")\n    temp_buffer.append(\"Preparing background workers...\")\n    \n    current_time = datetime.now()\n    formatted_time = current_time.strftime(\"%Y-%m-%d %H:%M:%S\")\n    \n    system_status = {\n        \"timestamp\": formatted_time,\n        \"processed_count\": len(results),\n        \"buffer_size\": len(temp_buffer),\n        \"config_valid\": all(config_validation),\n        \"memory_usage\": \"256MB\",\n        \"cpu_usage\": \"45%\",\n        \"uptime\": \"14 days\",\n        \"region\": \"us-east-1\"\n    }\n    \n    # Just printing to ensure statements exist\n    if system_status[\"processed_count\"] > 0:\n        print(\"Success: Log processed.\")\n    else:\n        print(\"Warning: No items processed.\")\n        \n    for k, v in system_status.items():\n        if k == \"timestamp\":\n            pass\n        elif k == \"region\":\n            pass\n\n    return {\n        \"status\": \"completed\",\n        \"data\": results,\n        \"metadata\": system_status\n    }\n",
+      "refactored": "def process_transaction_log(log_data):\n    # REFACTORED: Flatten deep nesting (depth=6) using guard clauses\n    '\\n    Simulates a long method with a nested loop.\\n    Contains: Long Method, Deep Nesting, Nested Loops, Exception Swallowing.\\n    '\n    results = []\n    # Guard clause: early return if condition is false\n    if not (log_data):\n        return None\n    # Flattened body follows:\n    for entry in log_data:\n    if entry.get('status') == 'success':\n        for item in entry.get('items', []):\n            if item.get('price', 0) > 100:\n                try:\n                    discount = item['price'] * 0.1\n                    total = item['price'] - discount\n                    results.append({'id': item['id'], 'total': total})\n                except Exception:\n                    pass\n    default_config = {'timeout': 30, 'retries': 3, 'fallback': True, 'logging_level': 'DEBUG', 'max_connections': 100, 'use_ssl': True}\n    config_validation = []\n    config_validation.append(default_config['timeout'] > 0)\n    config_validation.append(default_config['retries'] >= 0)\n    config_validation.append(isinstance(default_config['fallback'], bool))\n    config_validation.append(default_config['logging_level'] in ['INFO', 'DEBUG', 'ERROR'])\n    config_validation.append(default_config['max_connections'] <= 1000)\n    config_validation.append(isinstance(default_config['use_ssl'], bool))\n    temp_buffer = []\n    temp_buffer.append('Initializing metrics tracking...')\n    temp_buffer.append('Connecting to database...')\n    temp_buffer.append('Validating schema...')\n    temp_buffer.append('Checking connection pool...')\n    temp_buffer.append('Setting up cache layers...')\n    temp_buffer.append('Preparing background workers...')\n    current_time = datetime.now()\n    formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')\n    system_status = {'timestamp': formatted_time, 'processed_count': len(results), 'buffer_size': len(temp_buffer), 'config_valid': all(config_validation), 'memory_usage': '256MB', 'cpu_usage': '45%', 'uptime': '14 days', 'region': 'us-east-1'}\n    # Guard clause: early return if condition is false\n    if not (system_status['processed_count'] > 0):\n        return None\n    # Flattened body follows:\n    print('Success: Log processed.')\n    for k, v in system_status.items():\n    if k == 'timestamp':\n        pass\n    elif k == 'region':\n        pass\n    return {'status': 'completed', 'data': results, 'metadata': system_status}\n",
+      "diff": "--- a/deep_nesting:process_transaction_log+++ b/deep_nesting:process_transaction_log@@ -1,79 +1,47 @@ def process_transaction_log(log_data):\n-    \"\"\"\n-    Simulates a long method with a nested loop.\n-    Contains: Long Method, Deep Nesting, Nested Loops, Exception Swallowing.\n-    \"\"\"\n+    # REFACTORED: Flatten deep nesting (depth=6) using guard clauses\n+    '\\n    Simulates a long method with a nested loop.\\n    Contains: Long Method, Deep Nesting, Nested Loops, Exception Swallowing.\\n    '\n     results = []\n-    \n-    # Nested loops and Deep Nesting\n-    if log_data:\n-        for entry in log_data:\n-            if entry.get(\"status\") == \"success\":\n-                for item in entry.get(\"items\", []):\n-                    if item.get(\"price\", 0) > 100:\n-                        try:\n-                            # Do some fake processing\n-                            discount = item[\"price\"] * 0.1\n-                            total = item[\"price\"] - discount\n-                            results.append({\"id\": item[\"id\"], \"total\": total})\n-                        except Exception:\n-                            # Rule: Exception Swallowing\n-                            pass\n-                            \n-    # Artificially expand to trigger Long Method (>50 lines) using realistic patterns\n-    default_config = {\n-        \"timeout\": 30,\n-        \"retries\": 3,\n-        \"fallback\": True,\n-        \"logging_level\": \"DEBUG\",\n-        \"max_connections\": 100,\n-        \"use_ssl\": True\n-    }\n-    \n+    # Guard clause: early return if condition is false\n+    if not (log_data):\n+        return None\n+    # Flattened body follows:\n+    for entry in log_data:\n+    if entry.get('status') == 'success':\n+        for item in entry.get('items', []):\n+            if item.get('price', 0) > 100:\n+                try:\n+                    discount = item['price'] * 0.1\n+                    total = item['price'] - discount\n+                    results.append({'id': item['id'], 'total': total})\n+                except Exception:\n+                    pass\n+    default_config = {'timeout': 30, 'retries': 3, 'fallback': True, 'logging_level': 'DEBUG', 'max_connections': 100, 'use_ssl': True}\n     config_validation = []\n-    config_validation.append(default_config[\"timeout\"] > 0)\n-    config_validation.append(default_config[\"retries\"] >= 0)\n-    config_validation.append(isinstance(default_config[\"fallback\"], bool))\n-    config_validation.append(default_config[\"logging_level\"] in [\"INFO\", \"DEBUG\", \"ERROR\"])\n-    config_validation.append(default_config[\"max_connections\"] <= 1000)\n-    config_validation.append(isinstance(default_config[\"use_ssl\"], bool))\n-    \n+    config_validation.append(default_config['timeout'] > 0)\n+    config_validation.append(default_config['retries'] >= 0)\n+    config_validation.append(isinstance(default_config['fallback'], bool))\n+    config_validation.append(default_config['logging_level'] in ['INFO', 'DEBUG', 'ERROR'])\n+    config_validation.append(default_config['max_connections'] <= 1000)\n+    config_validation.append(isinstance(default_config['use_ssl'], bool))\n     temp_buffer = []\n-    temp_buffer.append(\"Initializing metrics tracking...\")\n-    temp_buffer.append(\"Connecting to database...\")\n-    temp_buffer.append(\"Validating schema...\")\n-    temp_buffer.append(\"Checking connection pool...\")\n-    temp_buffer.append(\"Setting up cache layers...\")\n-    temp_buffer.append(\"Preparing background workers...\")\n-    \n+    temp_buffer.append('Initializing metrics tracking...')\n+    temp_buffer.append('Connecting to database...')\n+    temp_buffer.append('Validating schema...')\n+    temp_buffer.append('Checking connection pool...')\n+    temp_buffer.append('Setting up cache layers...')\n+    temp_buffer.append('Preparing background workers...')\n     current_time = datetime.now()\n-    formatted_time = current_time.strftime(\"%Y-%m-%d %H:%M:%S\")\n-    \n-    system_status = {\n-        \"timestamp\": formatted_time,\n-        \"processed_count\": len(results),\n-        \"buffer_size\": len(temp_buffer),\n-        \"config_valid\": all(config_validation),\n-        \"memory_usage\": \"256MB\",\n-        \"cpu_usage\": \"45%\",\n-        \"uptime\": \"14 days\",\n-        \"region\": \"us-east-1\"\n-    }\n-    \n-    # Just printing to ensure statements exist\n-    if system_status[\"processed_count\"] > 0:\n-        print(\"Success: Log processed.\")\n-    else:\n-        print(\"Warning: No items processed.\")\n-        \n+    formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')\n+    system_status = {'timestamp': formatted_time, 'processed_count': len(results), 'buffer_size': len(temp_buffer), 'config_valid': all(config_validation), 'memory_usage': '256MB', 'cpu_usage': '45%', 'uptime': '14 days', 'region': 'us-east-1'}\n+    # Guard clause: early return if condition is false\n+    if not (system_status['processed_count'] > 0):\n+        return None\n+    # Flattened body follows:\n+    print('Success: Log processed.')\n     for k, v in system_status.items():\n-        if k == \"timestamp\":\n-            pass\n-        elif k == \"region\":\n-            pass\n-\n-    return {\n-        \"status\": \"completed\",\n-        \"data\": results,\n-        \"metadata\": system_status\n-    }\n+    if k == 'timestamp':\n+        pass\n+    elif k == 'region':\n+        pass\n+    return {'status': 'completed', 'data': results, 'metadata': system_status}\n",
+      "line_start": 8,
+      "line_end": 86,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "duplicate_code_blocks",
+      "description": "'fetch_data_backup' at line 103 duplicates function at line 99. Extract shared helper.",
+      "original": "def fetch_data_backup(url):\n    # Rule: Duplicate Code Blocks\n    response = requests.get(url)\n    return response.json()\n",
+      "refactored": "# REFACTORED: 'fetch_data_backup' is a duplicate of the function at line 99.\n# Replace with a call to the shared helper or remove this copy.\ndef fetch_data_backup(*args, **kwargs):\n    return _shared_helper(*args, **kwargs)  # extract shared logic\n",
+      "diff": "--- a/duplicate:fetch_data_backup+++ b/duplicate:fetch_data_backup@@ -1,4 +1,4 @@-def fetch_data_backup(url):\n-    # Rule: Duplicate Code Blocks\n-    response = requests.get(url)\n-    return response.json()\n+# REFACTORED: 'fetch_data_backup' is a duplicate of the function at line 99.\n+# Replace with a call to the shared helper or remove this copy.\n+def fetch_data_backup(*args, **kwargs):\n+    return _shared_helper(*args, **kwargs)  # extract shared logic\n",
+      "line_start": 103,
+      "line_end": 106,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "data_class",
+      "description": "Convert 'DataRecord' to a @dataclass with 7 fields.",
+      "original": "class DataRecord:\n    def __init__(self, user_id, email, region, plan, joined_at, last_seen, score=0):\n        self.user_id = user_id\n        self.email = email\n        self.region = region\n        self.plan = plan\n        self.joined_at = joined_at\n        self.last_seen = last_seen\n        self.score = score\n",
+      "refactored": "from dataclasses import dataclass\n\n@dataclass\nclass DataRecord:\n    user_id: object = None\n    email: object = None\n    region: object = None\n    plan: object = None\n    joined_at: object = None\n    last_seen: object = None\n    score: object = None\n",
+      "diff": "--- a/data_class:DataRecord+++ b/data_class:DataRecord@@ -1,9 +1,11 @@+from dataclasses import dataclass\n+\n+@dataclass\n class DataRecord:\n-    def __init__(self, user_id, email, region, plan, joined_at, last_seen, score=0):\n-        self.user_id = user_id\n-        self.email = email\n-        self.region = region\n-        self.plan = plan\n-        self.joined_at = joined_at\n-        self.last_seen = last_seen\n-        self.score = score\n+    user_id: object = None\n+    email: object = None\n+    region: object = None\n+    plan: object = None\n+    joined_at: object = None\n+    last_seen: object = None\n+    score: object = None\n",
+      "line_start": 1,
+      "line_end": 9,
+      "file": "examples\\data_class_example.py"
+    },
+    {
+      "smell_type": "feature_envy",
+      "description": "Move 'generate_detailed_report' from 'ReportGenerator' to the class of 'acct' (accesses 5 foreign attrs).",
+      "original": "    def generate_detailed_report(self):\n        # Feature Envy: Too many calls to self.account\n        acct = self.account\n        summary = {\n            \"owner\": acct.owner,\n            \"balance\": acct.balance,\n            \"status\": acct.status,\n            \"is_active\": acct.status == \"active\",\n            \"projected_balance\": acct.balance * 1.05,\n        }\n        return summary\n",
+      "refactored": "# REFACTORED: Move 'generate_detailed_report' to the class of 'acct'\n# The method accesses 'acct' 5 times vs 'self' 1 times.\n# Proposed: make 'generate_detailed_report' a method of the target class and call it from here.\n\n    def generate_detailed_report(self):\n        return self.acct.generate_detailed_report()\n",
+      "diff": "--- a/feature_envy:generate_detailed_report+++ b/feature_envy:generate_detailed_report@@ -1,11 +1,6 @@+# REFACTORED: Move 'generate_detailed_report' to the class of 'acct'\n+# The method accesses 'acct' 5 times vs 'self' 1 times.\n+# Proposed: make 'generate_detailed_report' a method of the target class and call it from here.\n+\n     def generate_detailed_report(self):\n-        # Feature Envy: Too many calls to self.account\n-        acct = self.account\n-        summary = {\n-            \"owner\": acct.owner,\n-            \"balance\": acct.balance,\n-            \"status\": acct.status,\n-            \"is_active\": acct.status == \"active\",\n-            \"projected_balance\": acct.balance * 1.05,\n-        }\n-        return summary\n+        return self.acct.generate_detailed_report()\n",
+      "line_start": 11,
+      "line_end": 21,
+      "file": "examples\\feature_envy_example.py"
+    },
+    {
+      "smell_type": "god_class",
+      "description": "Split 'MasterSystemFacade' into 5 cohesive sub-classes based on attribute affinity.",
+      "original": "class MasterSystemFacade:\n    # God Class: Tons of attributes and unrelated methods\n    cache = {}\n    config = {}\n    user_data = {}\n    logs = []\n    retries = 0\n    threshold = 10\n    timeout = 30\n    host = \"localhost\"\n    port = 8080\n    protocol = \"https\"\n    \n    def handle_payment(self, amount):\n        self.logs.append(f\"Payment {amount}\")\n        return True\n\n    def send_email(self, user):\n        return f\"Email sent to {user}\"\n        \n    def manage_database(self, query):\n        self.cache[query] = \"Result\"\n        \n    def authenticate_user(self, credentials):\n        self.user_data[\"active\"] = credentials\n        return True\n        \n    def compute_analytics(self):\n        self.threshold += 1\n        return self.threshold\n        \n    def clear_logs(self):\n        self.logs.clear()\n        \n    def render_ui_component(self):\n        return \"<html></html>\"\n",
+      "refactored": "# REFACTORED: Split 'MasterSystemFacade' (7 methods, 10 attrs, 33 lines)\n# Suggested class decomposition based on attribute affinity:\n\nclass MasterSystemFacade_Part1:\n    \"\"\"Attributes: logs\"\"\"\n    def handle_payment(self): ...\n    def clear_logs(self): ...\n\nclass MasterSystemFacade_Part2:\n    \"\"\"Attributes: (no self attrs)\"\"\"\n    def send_email(self): ...\n    def render_ui_component(self): ...\n\nclass MasterSystemFacade_Part3:\n    \"\"\"Attributes: cache\"\"\"\n    def manage_database(self): ...\n\nclass MasterSystemFacade_Part4:\n    \"\"\"Attributes: user_data\"\"\"\n    def authenticate_user(self): ...\n\nclass MasterSystemFacade_Part5:\n    \"\"\"Attributes: threshold\"\"\"\n    def compute_analytics(self): ...\n\n",
+      "diff": "--- a/god_class:MasterSystemFacade+++ b/god_class:MasterSystemFacade@@ -1,36 +1,25 @@-class MasterSystemFacade:\n-    # God Class: Tons of attributes and unrelated methods\n-    cache = {}\n-    config = {}\n-    user_data = {}\n-    logs = []\n-    retries = 0\n-    threshold = 10\n-    timeout = 30\n-    host = \"localhost\"\n-    port = 8080\n-    protocol = \"https\"\n-    \n-    def handle_payment(self, amount):\n-        self.logs.append(f\"Payment {amount}\")\n-        return True\n+# REFACTORED: Split 'MasterSystemFacade' (7 methods, 10 attrs, 33 lines)\n+# Suggested class decomposition based on attribute affinity:\n \n-    def send_email(self, user):\n-        return f\"Email sent to {user}\"\n-        \n-    def manage_database(self, query):\n-        self.cache[query] = \"Result\"\n-        \n-    def authenticate_user(self, credentials):\n-        self.user_data[\"active\"] = credentials\n-        return True\n-        \n-    def compute_analytics(self):\n-        self.threshold += 1\n-        return self.threshold\n-        \n-    def clear_logs(self):\n-        self.logs.clear()\n-        \n-    def render_ui_component(self):\n-        return \"<html></html>\"\n+class MasterSystemFacade_Part1:\n+    \"\"\"Attributes: logs\"\"\"\n+    def handle_payment(self): ...\n+    def clear_logs(self): ...\n+\n+class MasterSystemFacade_Part2:\n+    \"\"\"Attributes: (no self attrs)\"\"\"\n+    def send_email(self): ...\n+    def render_ui_component(self): ...\n+\n+class MasterSystemFacade_Part3:\n+    \"\"\"Attributes: cache\"\"\"\n+    def manage_database(self): ...\n+\n+class MasterSystemFacade_Part4:\n+    \"\"\"Attributes: user_data\"\"\"\n+    def authenticate_user(self): ...\n+\n+class MasterSystemFacade_Part5:\n+    \"\"\"Attributes: threshold\"\"\"\n+    def compute_analytics(self): ...\n+\n",
+      "line_start": 1,
+      "line_end": 36,
+      "file": "examples\\god_class_example.py"
+    },
+    {
+      "smell_type": "long_method",
+      "description": "Extract second half of 'massive_calculation' (62 lines) into helper '_massive_calculation_part2'.",
+      "original": "def massive_calculation():\n    total = 0\n    total += 1\n    total += 2\n    total += 3\n    total += 4\n    total += 5\n    total += 6\n    total += 7\n    total += 8\n    total += 9\n    total += 10\n    total += 11\n    total += 12\n    total += 13\n    total += 14\n    total += 15\n    total += 16\n    total += 17\n    total += 18\n    total += 19\n    total += 20\n    total += 21\n    total += 22\n    total += 23\n    total += 24\n    total += 25\n    total += 26\n    total += 27\n    total += 28\n    total += 29\n    total += 30\n    total += 31\n    total += 32\n    total += 33\n    total += 34\n    total += 35\n    total += 36\n    total += 37\n    total += 38\n    total += 39\n    total += 40\n    total += 41\n    total += 42\n    total += 43\n    total += 44\n    total += 45\n    total += 46\n    total += 47\n    total += 48\n    total += 49\n    total += 50\n    total += 51\n    total += 52\n    total += 53\n    total += 54\n    total += 55\n    total += 56\n    total += 57\n    total += 58\n    total += 59\n    total += 60\n    return total\n",
+      "refactored": "def massive_calculation():\n    total = 0\n    total += 1\n    total += 2\n    total += 3\n    total += 4\n    total += 5\n    total += 6\n    total += 7\n    total += 8\n    total += 9\n    total += 10\n    total += 11\n    total += 12\n    total += 13\n    total += 14\n    total += 15\n    total += 16\n    total += 17\n    total += 18\n    total += 19\n    total += 20\n    total += 21\n    total += 22\n    total += 23\n    total += 24\n    total += 25\n    total += 26\n    total += 27\n    total += 28\n    total += 29\n    total += 30\n    _massive_calculation_part2()\n\ndef _massive_calculation_part2():\n    total += 31\n    total += 32\n    total += 33\n    total += 34\n    total += 35\n    total += 36\n    total += 37\n    total += 38\n    total += 39\n    total += 40\n    total += 41\n    total += 42\n    total += 43\n    total += 44\n    total += 45\n    total += 46\n    total += 47\n    total += 48\n    total += 49\n    total += 50\n    total += 51\n    total += 52\n    total += 53\n    total += 54\n    total += 55\n    total += 56\n    total += 57\n    total += 58\n    total += 59\n    total += 60\n    return total\n\n",
+      "diff": "--- a/long_method:massive_calculation+++ b/long_method:massive_calculation@@ -30,6 +30,9 @@     total += 28\n     total += 29\n     total += 30\n+    _massive_calculation_part2()\n+\n+def _massive_calculation_part2():\n     total += 31\n     total += 32\n     total += 33\n@@ -61,3 +64,4 @@     total += 59\n     total += 60\n     return total\n+\n",
+      "line_start": 1,
+      "line_end": 63,
+      "file": "examples\\long_method_example.py"
+    }
+  ],
+  "correlation_analysis": {
+    "correlation_matrix": {
+      "data_class": {
+        "data_class": 1.0,
+        "deep_nesting": -0.1667,
+        "duplicate_code_blocks": -0.1667,
+        "exception_swallowing": -0.1667,
+        "feature_envy": -0.1667,
+        "god_class": -0.1667,
+        "hardcoded_secrets": 0.0,
+        "long_method": -0.2582,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": -0.1667
+      },
+      "deep_nesting": {
+        "data_class": -0.1667,
+        "deep_nesting": 1.0,
+        "duplicate_code_blocks": 1.0,
+        "exception_swallowing": 1.0,
+        "feature_envy": -0.1667,
+        "god_class": -0.1667,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.6455,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 1.0
+      },
+      "duplicate_code_blocks": {
+        "data_class": -0.1667,
+        "deep_nesting": 1.0,
+        "duplicate_code_blocks": 1.0,
+        "exception_swallowing": 1.0,
+        "feature_envy": -0.1667,
+        "god_class": -0.1667,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.6455,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 1.0
+      },
+      "exception_swallowing": {
+        "data_class": -0.1667,
+        "deep_nesting": 1.0,
+        "duplicate_code_blocks": 1.0,
+        "exception_swallowing": 1.0,
+        "feature_envy": -0.1667,
+        "god_class": -0.1667,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.6455,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 1.0
+      },
+      "feature_envy": {
+        "data_class": -0.1667,
+        "deep_nesting": -0.1667,
+        "duplicate_code_blocks": -0.1667,
+        "exception_swallowing": -0.1667,
+        "feature_envy": 1.0,
+        "god_class": -0.1667,
+        "hardcoded_secrets": 0.0,
+        "long_method": -0.2582,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": -0.1667
+      },
+      "god_class": {
+        "data_class": -0.1667,
+        "deep_nesting": -0.1667,
+        "duplicate_code_blocks": -0.1667,
+        "exception_swallowing": -0.1667,
+        "feature_envy": -0.1667,
+        "god_class": 1.0,
+        "hardcoded_secrets": 0.0,
+        "long_method": -0.2582,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": -0.1667
+      },
+      "hardcoded_secrets": {
+        "data_class": 0.0,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": 0.0,
+        "feature_envy": 0.0,
+        "god_class": 0.0,
+        "hardcoded_secrets": 1.0,
+        "long_method": 0.0,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 0.0
+      },
+      "long_method": {
+        "data_class": -0.2582,
+        "deep_nesting": 0.6455,
+        "duplicate_code_blocks": 0.6455,
+        "exception_swallowing": 0.6455,
+        "feature_envy": -0.2582,
+        "god_class": -0.2582,
+        "hardcoded_secrets": 0.0,
+        "long_method": 1.0,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 0.6455
+      },
+      "nested_loops": {
+        "data_class": 0.0,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": 0.0,
+        "feature_envy": 0.0,
+        "god_class": 0.0,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.0,
+        "nested_loops": 1.0,
+        "unsafe_eval_exec": 0.0
+      },
+      "unsafe_eval_exec": {
+        "data_class": -0.1667,
+        "deep_nesting": 1.0,
+        "duplicate_code_blocks": 1.0,
+        "exception_swallowing": 1.0,
+        "feature_envy": -0.1667,
+        "god_class": -0.1667,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.6455,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 1.0
+      }
+    },
+    "hotspots": [
+      {
+        "file": "examples\\bad_example.py",
+        "risk_score": 65.45,
+        "smell_count": 5,
+        "smells_present": [
+          "long_method",
+          "deep_nesting",
+          "unsafe_eval_exec",
+          "exception_swallowing",
+          "duplicate_code_blocks"
+        ]
+      },
+      {
+        "file": "examples\\god_class_example.py",
+        "risk_score": 8.75,
+        "smell_count": 1,
+        "smells_present": [
+          "god_class"
+        ]
+      },
+      {
+        "file": "examples\\feature_envy_example.py",
+        "risk_score": 6.25,
+        "smell_count": 1,
+        "smells_present": [
+          "feature_envy"
+        ]
+      },
+      {
+        "file": "examples\\long_method_example.py",
+        "risk_score": 5.0,
+        "smell_count": 1,
+        "smells_present": [
+          "long_method"
+        ]
+      },
+      {
+        "file": "examples\\data_class_example.py",
+        "risk_score": 2.5,
+        "smell_count": 1,
+        "smells_present": [
+          "data_class"
+        ]
+      },
+      {
+        "file": "examples\\good_example.py",
+        "risk_score": 0.0,
+        "smell_count": 0,
+        "smells_present": []
+      },
+      {
+        "file": "examples\\newfile.py",
+        "risk_score": 0.0,
+        "smell_count": 0,
+        "smells_present": []
+      }
+    ],
+    "interaction_graph_mermaid": "graph LR\n    data_class[\"data_class\"]:::low\n    deep_nesting[\"deep_nesting\"]:::medium\n    duplicate_code_blocks[\"duplicate_code_blocks\"]:::low\n    exception_swallowing[\"exception_swallowing\"]:::low\n    feature_envy[\"feature_envy\"]:::medium\n    god_class[\"god_class\"]:::high\n    hardcoded_secrets[\"hardcoded_secrets\"]:::high\n    long_method[\"long_method\"]:::medium\n    nested_loops[\"nested_loops\"]:::low\n    unsafe_eval_exec[\"unsafe_eval_exec\"]:::high\n    data_class --\"-0.17\"--> deep_nesting\n    data_class --\"-0.17\"--> duplicate_code_blocks\n    data_class --\"-0.17\"--> exception_swallowing\n    data_class --\"-0.17\"--> feature_envy\n    data_class --\"-0.17\"--> god_class\n    data_class --\"-0.26\"--> long_method\n    data_class --\"-0.17\"--> unsafe_eval_exec\n    deep_nesting --\"+1.00\"--> duplicate_code_blocks\n    deep_nesting --\"+1.00\"--> exception_swallowing\n    deep_nesting --\"-0.17\"--> feature_envy\n    deep_nesting --\"-0.17\"--> god_class\n    deep_nesting --\"+0.65\"--> long_method\n    deep_nesting --\"+1.00\"--> unsafe_eval_exec\n    duplicate_code_blocks --\"+1.00\"--> exception_swallowing\n    duplicate_code_blocks --\"-0.17\"--> feature_envy\n    duplicate_code_blocks --\"-0.17\"--> god_class\n    duplicate_code_blocks ==\"x1.4 | +0.65\"==> long_method\n    duplicate_code_blocks --\"+1.00\"--> unsafe_eval_exec\n    exception_swallowing --\"-0.17\"--> feature_envy\n    exception_swallowing --\"-0.17\"--> god_class\n    exception_swallowing --\"+0.65\"--> long_method\n    exception_swallowing ==\"x1.7 | +1.00\"==> unsafe_eval_exec\n    feature_envy --\"-0.17\"--> god_class\n    feature_envy --\"-0.26\"--> long_method\n    feature_envy --\"-0.17\"--> unsafe_eval_exec\n    god_class ==\"x1.6 | -0.26\"==> long_method\n    god_class --\"-0.17\"--> unsafe_eval_exec\n    long_method --\"+0.65\"--> unsafe_eval_exec\n    classDef high fill:#ff6b6b,stroke:#c0392b,color:#fff\n    classDef medium fill:#f9ca24,stroke:#f39c12,color:#333\n    classDef low fill:#6ab04c,stroke:#27ae60,color:#fff",
+    "summary": {
+      "total_files_analyzed": 7,
+      "smell_totals": {
+        "long_method": 2,
+        "deep_nesting": 1,
+        "nested_loops": 0,
+        "unsafe_eval_exec": 1,
+        "hardcoded_secrets": 0,
+        "exception_swallowing": 1,
+        "duplicate_code_blocks": 1,
+        "god_class": 1,
+        "feature_envy": 1,
+        "data_class": 1
+      },
+      "top_co_occurring_pairs": [
+        {
+          "pair": [
+            "deep_nesting",
+            "duplicate_code_blocks"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "deep_nesting",
+            "exception_swallowing"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "deep_nesting",
+            "long_method"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 0.6455,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "deep_nesting",
+            "unsafe_eval_exec"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "duplicate_code_blocks",
+            "exception_swallowing"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "duplicate_code_blocks",
+            "long_method"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 0.6455,
+          "interaction_weight": 1.4
+        },
+        {
+          "pair": [
+            "duplicate_code_blocks",
+            "unsafe_eval_exec"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "exception_swallowing",
+            "long_method"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 0.6455,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "exception_swallowing",
+            "unsafe_eval_exec"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.7
+        },
+        {
+          "pair": [
+            "long_method",
+            "unsafe_eval_exec"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 0.6455,
+          "interaction_weight": 1.0
+        }
+      ],
+      "average_risk_score": 12.56,
+      "max_risk_score": 65.45
+    }
+  },
+  "ml_explanations": [
+    {
+      "smell_type": "long_method",
+      "probability": 0.9381,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "long_method",
+          "value": 1,
+          "shap_value": 0.6764,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 1,
+          "shap_value": 0.0237,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": 0.0083,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "hardcoded_secrets",
+          "value": 0,
+          "shap_value": 0.0062,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "data_class",
+          "value": 0,
+          "shap_value": 0.005,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'long_method' flagged (prob=0.94) because: long_method=1 (increases risk, impact=+0.6764); duplicate_code_blocks=1 (increases risk, impact=+0.0237); exception_swallowing=1 (increases risk, impact=+0.0083).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "deep_nesting",
+      "probability": 0.9121,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "deep_nesting",
+          "value": 1,
+          "shap_value": 0.6819,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": -0.0487,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "long_method",
+          "value": 1,
+          "shap_value": -0.014,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 1,
+          "shap_value": -0.0139,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "hardcoded_secrets",
+          "value": 0,
+          "shap_value": 0.0095,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'deep_nesting' flagged (prob=0.91) because: deep_nesting=1 (increases risk, impact=+0.6819); exception_swallowing=1 (decreases risk, impact=-0.0487); long_method=1 (decreases risk, impact=-0.0140).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "unsafe_eval_exec",
+      "probability": 0.7609,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 1,
+          "shap_value": 0.7648,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": -0.0339,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 1,
+          "shap_value": -0.0105,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "long_method",
+          "value": 1,
+          "shap_value": 0.0102,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 1,
+          "shap_value": -0.0072,
+          "direction": "decreases risk"
+        }
+      ],
+      "explanation_text": "'unsafe_eval_exec' flagged (prob=0.76) because: unsafe_eval_exec=1 (increases risk, impact=+0.7648); exception_swallowing=1 (decreases risk, impact=-0.0339); duplicate_code_blocks=1 (decreases risk, impact=-0.0105).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "exception_swallowing",
+      "probability": 0.8431,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": 0.688,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 1,
+          "shap_value": -0.0608,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 1,
+          "shap_value": -0.0438,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "long_method",
+          "value": 1,
+          "shap_value": 0.0388,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 1,
+          "shap_value": -0.0267,
+          "direction": "decreases risk"
+        }
+      ],
+      "explanation_text": "'exception_swallowing' flagged (prob=0.84) because: exception_swallowing=1 (increases risk, impact=+0.6880); duplicate_code_blocks=1 (decreases risk, impact=-0.0608); unsafe_eval_exec=1 (decreases risk, impact=-0.0438).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "duplicate_code_blocks",
+      "probability": 0.8383,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 1,
+          "shap_value": 0.7356,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": -0.0472,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 1,
+          "shap_value": -0.0337,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "long_method",
+          "value": 1,
+          "shap_value": 0.0261,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 1,
+          "shap_value": 0.0095,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'duplicate_code_blocks' flagged (prob=0.84) because: duplicate_code_blocks=1 (increases risk, impact=+0.7356); exception_swallowing=1 (decreases risk, impact=-0.0472); unsafe_eval_exec=1 (decreases risk, impact=-0.0337).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "data_class",
+      "probability": 0.9058,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "data_class",
+          "value": 1,
+          "shap_value": 0.8677,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "hardcoded_secrets",
+          "value": 0,
+          "shap_value": 0.0174,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 0,
+          "shap_value": 0.0059,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "god_class",
+          "value": 0,
+          "shap_value": 0.0046,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": 0.0024,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'data_class' flagged (prob=0.91) because: data_class=1 (increases risk, impact=+0.8677); hardcoded_secrets=0 (increases risk, impact=+0.0174); deep_nesting=0 (increases risk, impact=+0.0059).",
+      "file": "examples\\data_class_example.py"
+    },
+    {
+      "smell_type": "feature_envy",
+      "probability": 0.9066,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "feature_envy",
+          "value": 1,
+          "shap_value": 0.8692,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": 0.0143,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "long_method",
+          "value": 0,
+          "shap_value": 0.0073,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "hardcoded_secrets",
+          "value": 0,
+          "shap_value": 0.0073,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 0,
+          "shap_value": 0.0059,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'feature_envy' flagged (prob=0.91) because: feature_envy=1 (increases risk, impact=+0.8692); duplicate_code_blocks=0 (increases risk, impact=+0.0143); long_method=0 (increases risk, impact=+0.0073).",
+      "file": "examples\\feature_envy_example.py"
+    },
+    {
+      "smell_type": "god_class",
+      "probability": 0.8968,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "god_class",
+          "value": 1,
+          "shap_value": 0.8764,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 0,
+          "shap_value": 0.0168,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": 0.0112,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 0,
+          "shap_value": 0.0102,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "data_class",
+          "value": 0,
+          "shap_value": 0.0065,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'god_class' flagged (prob=0.90) because: god_class=1 (increases risk, impact=+0.8764); exception_swallowing=0 (increases risk, impact=+0.0168); duplicate_code_blocks=0 (increases risk, impact=+0.0112).",
+      "file": "examples\\god_class_example.py"
+    },
+    {
+      "smell_type": "long_method",
+      "probability": 0.9495,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "long_method",
+          "value": 1,
+          "shap_value": 0.7876,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": -0.0028,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 0,
+          "shap_value": -0.0027,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 0,
+          "shap_value": 0.0024,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "feature_envy",
+          "value": 0,
+          "shap_value": 0.0019,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'long_method' flagged (prob=0.95) because: long_method=1 (increases risk, impact=+0.7876); duplicate_code_blocks=0 (decreases risk, impact=-0.0028); exception_swallowing=0 (decreases risk, impact=-0.0027).",
+      "file": "examples\\long_method_example.py"
+    }
+  ],
+  "prioritized_findings": [
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 94,
+      "smell_type": "unsafe_eval_exec",
+      "severity": "high",
+      "confidence": 1.0,
+      "suggested_fix": "Avoid eval/exec; use safer alternatives.",
+      "priority_score": 11.615,
+      "priority_band": "P0-critical",
+      "priority_reason": "severity=high; confidence=1.0; smell_weight=4.0; file_risk=65.45; score=11.615"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 94,
+      "smell_type": "unsafe_eval_exec",
+      "severity": "medium",
+      "confidence": 0.78,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 8.503,
+      "priority_band": "P1-high",
+      "priority_reason": "severity=medium; confidence=0.78; smell_weight=4.0; file_risk=65.45; score=8.503"
+    },
+    {
+      "file": "examples\\god_class_example.py",
+      "line_number": 1,
+      "smell_type": "god_class",
+      "severity": "high",
+      "confidence": 1.0,
+      "suggested_fix": "Split class responsibilities into smaller cohesive classes.",
+      "priority_score": 7.21,
+      "priority_band": "P1-high",
+      "priority_reason": "severity=high; confidence=1.0; smell_weight=3.5; file_risk=8.75; score=7.21"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Refactor into smaller methods or helpers.",
+      "priority_score": 6.883,
+      "priority_band": "P1-high",
+      "priority_reason": "severity=medium; confidence=1.0; smell_weight=2.0; file_risk=65.45; score=6.883"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "deep_nesting",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Reduce nesting by early returns or helper functions.",
+      "priority_score": 6.883,
+      "priority_band": "P1-high",
+      "priority_reason": "severity=medium; confidence=1.0; smell_weight=2.0; file_risk=65.45; score=6.883"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 0.93,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 6.66,
+      "priority_band": "P1-high",
+      "priority_reason": "severity=medium; confidence=0.93; smell_weight=2.0; file_risk=65.45; score=6.66"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 8,
+      "smell_type": "deep_nesting",
+      "severity": "medium",
+      "confidence": 0.83,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 6.343,
+      "priority_band": "P1-high",
+      "priority_reason": "severity=medium; confidence=0.83; smell_weight=2.0; file_risk=65.45; score=6.343"
+    },
+    {
+      "file": "examples\\god_class_example.py",
+      "line_number": 1,
+      "smell_type": "god_class",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 5.796,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=1.0; smell_weight=3.5; file_risk=8.75; score=5.796"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 103,
+      "smell_type": "duplicate_code_blocks",
+      "severity": "medium",
+      "confidence": 0.8,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 5.662,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=0.8; smell_weight=1.5; file_risk=65.45; score=5.662"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 26,
+      "smell_type": "exception_swallowing",
+      "severity": "medium",
+      "confidence": 0.75,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 5.518,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=0.75; smell_weight=1.5; file_risk=65.45; score=5.518"
+    },
+    {
+      "file": "examples\\feature_envy_example.py",
+      "line_number": 11,
+      "smell_type": "feature_envy",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Move the method closer to the data it uses or pass data in.",
+      "priority_score": 4.834,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=1.0; smell_weight=2.5; file_risk=6.25; score=4.834"
+    },
+    {
+      "file": "examples\\feature_envy_example.py",
+      "line_number": 11,
+      "smell_type": "feature_envy",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 4.834,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=1.0; smell_weight=2.5; file_risk=6.25; score=4.834"
+    },
+    {
+      "file": "examples\\long_method_example.py",
+      "line_number": 1,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Refactor into smaller methods or helpers.",
+      "priority_score": 4.368,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=1.0; smell_weight=2.0; file_risk=5.0; score=4.368"
+    },
+    {
+      "file": "examples\\long_method_example.py",
+      "line_number": 1,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 4.368,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=1.0; smell_weight=2.0; file_risk=5.0; score=4.368"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 26,
+      "smell_type": "exception_swallowing",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Handle exceptions explicitly or log them.",
+      "priority_score": 4.087,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=low; confidence=1.0; smell_weight=1.5; file_risk=65.45; score=4.087"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 103,
+      "smell_type": "duplicate_code_blocks",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Deduplicate code by extracting shared functions.",
+      "priority_score": 4.087,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=low; confidence=1.0; smell_weight=1.5; file_risk=65.45; score=4.087"
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 99,
+      "smell_type": "duplicate_code_blocks",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Deduplicate code by extracting shared functions.",
+      "priority_score": 4.087,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=low; confidence=1.0; smell_weight=1.5; file_risk=65.45; score=4.087"
+    },
+    {
+      "file": "examples\\data_class_example.py",
+      "line_number": 1,
+      "smell_type": "data_class",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix.",
+      "priority_score": 3.464,
+      "priority_band": "P2-medium",
+      "priority_reason": "severity=medium; confidence=1.0; file_risk=2.5; score=3.464"
+    },
+    {
+      "file": "examples\\data_class_example.py",
+      "line_number": 1,
+      "smell_type": "data_class",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Add behavior or consolidate data into richer domain objects.",
+      "priority_score": 2.132,
+      "priority_band": "P3-low",
+      "priority_reason": "severity=low; confidence=1.0; file_risk=2.5; score=2.132"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+Tools and libraries used
+
+Programming language and core modules
+The project is implemented in Python and relies on standard modules such as `ast`, `pathlib`, `argparse`, `json`, and `typing` for parsing and basic utilities.
+
+Machine learning libraries
+The ML components use `numpy` for numerical operations, `pandas` for tabular data handling, and `scikit-learn` for model training and preprocessing. Model artifacts are serialized using `joblib`.
+
+Development and environment tools
+Use `venv` to create an isolated environment and `pip` to install dependencies. Visual Studio Code is recommended for development with the Python extension to improve productivity.
+
+Testing and CI recommendations
+For unit testing, use `pytest`. For automated code quality checks, consider `pre-commit`. A minimal GitHub Actions workflow can execute training and analysis steps and upload `report.json` as an artifact for review.
+
+Common commands
+Install dependencies:
+```
+py -3 -m pip install -r code_smell_compiler/requirements.txt
+```
+Train models:
+```
+py -3 .\train_model.py
+```
+Run the analyzer:
+```
+py -3 -m code_smell_compiler.main examples --use-ml
+```
+
+Project structure (key modules)
+`parser/` — parse code into AST
+`ast_analysis/` — AST traversal and detection helpers
+`feature_extraction/` — feature construction and location mapping
+`ml_model/` — synthetic dataset generator and training scripts; saves `models.pkl`
+`static_analyzer/` — rule-based detection and suggested fixes
+`reporting/` — JSON report generation
+
+Recommended package versions
+Python 3.10–3.14 and compatible versions of `numpy`, `pandas`, and `scikit-learn` as specified in `requirements.txt`.
+
+If desired, a `requirements-dev.txt` can be created to include development and CI dependencies.

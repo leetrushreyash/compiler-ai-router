@@ -1,0 +1,684 @@
+{
+  "findings": [
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 36,
+      "smell_type": "unsafe_eval_exec",
+      "severity": "high",
+      "confidence": 1.0,
+      "suggested_fix": "Avoid eval/exec; use safer alternatives."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 1,
+      "smell_type": "hardcoded_secrets",
+      "severity": "high",
+      "confidence": 1.0,
+      "suggested_fix": "Move secrets to environment variables or a secrets manager."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 33,
+      "smell_type": "exception_swallowing",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Handle exceptions explicitly or log them."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 36,
+      "smell_type": "unsafe_eval_exec",
+      "severity": "medium",
+      "confidence": 0.84,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 1,
+      "smell_type": "hardcoded_secrets",
+      "severity": "medium",
+      "confidence": 0.76,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\bad_example.py",
+      "line_number": 33,
+      "smell_type": "exception_swallowing",
+      "severity": "medium",
+      "confidence": 0.63,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\data_class_example.py",
+      "line_number": 1,
+      "smell_type": "data_class",
+      "severity": "low",
+      "confidence": 1.0,
+      "suggested_fix": "Add behavior or consolidate data into richer domain objects."
+    },
+    {
+      "file": "examples\\data_class_example.py",
+      "line_number": 1,
+      "smell_type": "data_class",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\feature_envy_example.py",
+      "line_number": 12,
+      "smell_type": "feature_envy",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Move the method closer to the data it uses or pass data in."
+    },
+    {
+      "file": "examples\\feature_envy_example.py",
+      "line_number": 12,
+      "smell_type": "feature_envy",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\god_class_example.py",
+      "line_number": 1,
+      "smell_type": "god_class",
+      "severity": "high",
+      "confidence": 1.0,
+      "suggested_fix": "Split class responsibilities into smaller cohesive classes."
+    },
+    {
+      "file": "examples\\god_class_example.py",
+      "line_number": 1,
+      "smell_type": "god_class",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    },
+    {
+      "file": "examples\\long_method_example.py",
+      "line_number": 1,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "Refactor into smaller methods or helpers."
+    },
+    {
+      "file": "examples\\long_method_example.py",
+      "line_number": 1,
+      "smell_type": "long_method",
+      "severity": "medium",
+      "confidence": 1.0,
+      "suggested_fix": "See rule-based suggested fix."
+    }
+  ],
+  "refactorings": [
+    {
+      "smell_type": "exception_swallowing",
+      "description": "Replace bare 'except: pass' at line 33 with logging.exception().",
+      "original": "except Exception:\n    pass\n",
+      "refactored": "except Exception as e:\n    import logging\n    logging.exception(\"Caught exception: %s\", e)\n",
+      "diff": "--- a/exception_swallowing+++ b/exception_swallowing@@ -1,2 +1,3 @@-except Exception:\n-    pass\n+except Exception as e:\n+    import logging\n+    logging.exception(\"Caught exception: %s\", e)\n",
+      "line_start": 33,
+      "line_end": 34,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "hardcoded_secrets",
+      "description": "Replace hardcoded value of 'API_KEY' at line 1 with os.environ.get().",
+      "original": "API_KEY = \"SECRET_123\"\n",
+      "refactored": "import os\nAPI_KEY = os.environ.get(\"API_KEY\", \"\")\n",
+      "diff": "--- a/hardcoded_secret:API_KEY+++ b/hardcoded_secret:API_KEY@@ -1 +1,2 @@-API_KEY = \"SECRET_123\"\n+import os\n+API_KEY = os.environ.get(\"API_KEY\", \"\")\n",
+      "line_start": 1,
+      "line_end": 1,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "unsafe_eval_exec",
+      "description": "Replace unsafe 'eval()' at line 36 with safer alternative.",
+      "original": "eval('1+1')\n",
+      "refactored": "import ast as _ast\n_ast.literal_eval('1+1')\n",
+      "diff": "--- a/unsafe_eval+++ b/unsafe_eval@@ -1 +1,2 @@-eval('1+1')\n+import ast as _ast\n+_ast.literal_eval('1+1')\n",
+      "line_start": 36,
+      "line_end": 36,
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "data_class",
+      "description": "Convert 'DataRecord' to a @dataclass with 7 fields.",
+      "original": "class DataRecord:\n    def __init__(self, user_id, email, region, plan, joined_at, last_seen, score=0):\n        self.user_id = user_id\n        self.email = email\n        self.region = region\n        self.plan = plan\n        self.joined_at = joined_at\n        self.last_seen = last_seen\n        self.score = score\n",
+      "refactored": "from dataclasses import dataclass\n\n@dataclass\nclass DataRecord:\n    user_id: object = None\n    email: object = None\n    region: object = None\n    plan: object = None\n    joined_at: object = None\n    last_seen: object = None\n    score: object = None\n",
+      "diff": "--- a/data_class:DataRecord+++ b/data_class:DataRecord@@ -1,9 +1,11 @@+from dataclasses import dataclass\n+\n+@dataclass\n class DataRecord:\n-    def __init__(self, user_id, email, region, plan, joined_at, last_seen, score=0):\n-        self.user_id = user_id\n-        self.email = email\n-        self.region = region\n-        self.plan = plan\n-        self.joined_at = joined_at\n-        self.last_seen = last_seen\n-        self.score = score\n+    user_id: object = None\n+    email: object = None\n+    region: object = None\n+    plan: object = None\n+    joined_at: object = None\n+    last_seen: object = None\n+    score: object = None\n",
+      "line_start": 1,
+      "line_end": 9,
+      "file": "examples\\data_class_example.py"
+    },
+    {
+      "smell_type": "feature_envy",
+      "description": "Move 'build_report' from 'ReportGenerator' to the class of 'acct' (accesses 6 foreign attrs).",
+      "original": "    def build_report(self):\n        acct = self.account\n        summary = {\n            \"owner\": acct.owner,\n            \"balance\": acct.balance,\n            \"currency\": acct.currency,\n            \"status\": acct.status,\n            \"is_active\": acct.status == \"active\",\n            \"double_balance\": acct.balance * 2,\n        }\n        return summary\n",
+      "refactored": "# REFACTORED: Move 'build_report' to the class of 'acct'\n# The method accesses 'acct' 6 times vs 'self' 1 times.\n# Proposed: make 'build_report' a method of the target class and call it from here.\n\n    def build_report(self):\n        return self.acct.build_report()\n",
+      "diff": "--- a/feature_envy:build_report+++ b/feature_envy:build_report@@ -1,11 +1,6 @@+# REFACTORED: Move 'build_report' to the class of 'acct'\n+# The method accesses 'acct' 6 times vs 'self' 1 times.\n+# Proposed: make 'build_report' a method of the target class and call it from here.\n+\n     def build_report(self):\n-        acct = self.account\n-        summary = {\n-            \"owner\": acct.owner,\n-            \"balance\": acct.balance,\n-            \"currency\": acct.currency,\n-            \"status\": acct.status,\n-            \"is_active\": acct.status == \"active\",\n-            \"double_balance\": acct.balance * 2,\n-        }\n-        return summary\n+        return self.acct.build_report()\n",
+      "line_start": 12,
+      "line_end": 22,
+      "file": "examples\\feature_envy_example.py"
+    },
+    {
+      "smell_type": "god_class",
+      "description": "Split 'AnalyticsManager' into 7 cohesive sub-classes based on attribute affinity.",
+      "original": "class AnalyticsManager:\n    cache = {}\n    config = {}\n    user_data = {}\n    logs = []\n    retries = 0\n    threshold = 10\n    timeout = 30\n    host = \"localhost\"\n    port = 8080\n    protocol = \"http\"\n    path = \"/api\"\n    identifier = \"id-123\"\n\n    def connect(self):\n        return f\"{self.protocol}://{self.host}:{self.port}{self.path}\"\n\n    def fetch(self):\n        return self.cache.get(\"data\")\n\n    def process(self, payload):\n        return str(payload).upper()\n\n    def log_error(self, msg):\n        self.logs.append(msg)\n        return True\n\n    def cleanup(self):\n        self.cache.clear()\n        return None\n\n    def reset(self):\n        self.user_data = {}\n        return None\n\n    def ping(self):\n        return \"pong\"\n\n    def update_user(self, user, data):\n        self.user_data[user] = data\n        return True\n\n    def archive(self):\n        return list(self.user_data.keys())\n\n    def shutdown(self):\n        return \"offline\"\n\n    def refresh(self):\n        self.threshold += 1\n        return self.threshold\n\n    def export(self):\n        return {\"logs\": len(self.logs), \"cache\": len(self.cache)}\n",
+      "refactored": "# REFACTORED: Split 'AnalyticsManager' (12 methods, 12 attrs, 52 lines)\n# Suggested class decomposition based on attribute affinity:\n\nclass AnalyticsManager_Part1:\n    \"\"\"Attributes: host, path, port, protocol\"\"\"\n    def connect(self): ...\n\nclass AnalyticsManager_Part2:\n    \"\"\"Attributes: cache\"\"\"\n    def fetch(self): ...\n    def cleanup(self): ...\n\nclass AnalyticsManager_Part3:\n    \"\"\"Attributes: (no self attrs)\"\"\"\n    def process(self): ...\n    def ping(self): ...\n    def shutdown(self): ...\n\nclass AnalyticsManager_Part4:\n    \"\"\"Attributes: logs\"\"\"\n    def log_error(self): ...\n\nclass AnalyticsManager_Part5:\n    \"\"\"Attributes: user_data\"\"\"\n    def reset(self): ...\n    def update_user(self): ...\n    def archive(self): ...\n\nclass AnalyticsManager_Part6:\n    \"\"\"Attributes: threshold\"\"\"\n    def refresh(self): ...\n\nclass AnalyticsManager_Part7:\n    \"\"\"Attributes: cache, logs\"\"\"\n    def export(self): ...\n\n",
+      "diff": "--- a/god_class:AnalyticsManager+++ b/god_class:AnalyticsManager@@ -1,54 +1,36 @@-class AnalyticsManager:\n-    cache = {}\n-    config = {}\n-    user_data = {}\n-    logs = []\n-    retries = 0\n-    threshold = 10\n-    timeout = 30\n-    host = \"localhost\"\n-    port = 8080\n-    protocol = \"http\"\n-    path = \"/api\"\n-    identifier = \"id-123\"\n+# REFACTORED: Split 'AnalyticsManager' (12 methods, 12 attrs, 52 lines)\n+# Suggested class decomposition based on attribute affinity:\n \n-    def connect(self):\n-        return f\"{self.protocol}://{self.host}:{self.port}{self.path}\"\n+class AnalyticsManager_Part1:\n+    \"\"\"Attributes: host, path, port, protocol\"\"\"\n+    def connect(self): ...\n \n-    def fetch(self):\n-        return self.cache.get(\"data\")\n+class AnalyticsManager_Part2:\n+    \"\"\"Attributes: cache\"\"\"\n+    def fetch(self): ...\n+    def cleanup(self): ...\n \n-    def process(self, payload):\n-        return str(payload).upper()\n+class AnalyticsManager_Part3:\n+    \"\"\"Attributes: (no self attrs)\"\"\"\n+    def process(self): ...\n+    def ping(self): ...\n+    def shutdown(self): ...\n \n-    def log_error(self, msg):\n-        self.logs.append(msg)\n-        return True\n+class AnalyticsManager_Part4:\n+    \"\"\"Attributes: logs\"\"\"\n+    def log_error(self): ...\n \n-    def cleanup(self):\n-        self.cache.clear()\n-        return None\n+class AnalyticsManager_Part5:\n+    \"\"\"Attributes: user_data\"\"\"\n+    def reset(self): ...\n+    def update_user(self): ...\n+    def archive(self): ...\n \n-    def reset(self):\n-        self.user_data = {}\n-        return None\n+class AnalyticsManager_Part6:\n+    \"\"\"Attributes: threshold\"\"\"\n+    def refresh(self): ...\n \n-    def ping(self):\n-        return \"pong\"\n+class AnalyticsManager_Part7:\n+    \"\"\"Attributes: cache, logs\"\"\"\n+    def export(self): ...\n \n-    def update_user(self, user, data):\n-        self.user_data[user] = data\n-        return True\n-\n-    def archive(self):\n-        return list(self.user_data.keys())\n-\n-    def shutdown(self):\n-        return \"offline\"\n-\n-    def refresh(self):\n-        self.threshold += 1\n-        return self.threshold\n-\n-    def export(self):\n-        return {\"logs\": len(self.logs), \"cache\": len(self.cache)}\n",
+      "line_start": 1,
+      "line_end": 54,
+      "file": "examples\\god_class_example.py"
+    },
+    {
+      "smell_type": "long_method",
+      "description": "Extract second half of 'massive_calculation' (62 lines) into helper '_massive_calculation_part2'.",
+      "original": "def massive_calculation():\n    total = 0\n    total += 1\n    total += 2\n    total += 3\n    total += 4\n    total += 5\n    total += 6\n    total += 7\n    total += 8\n    total += 9\n    total += 10\n    total += 11\n    total += 12\n    total += 13\n    total += 14\n    total += 15\n    total += 16\n    total += 17\n    total += 18\n    total += 19\n    total += 20\n    total += 21\n    total += 22\n    total += 23\n    total += 24\n    total += 25\n    total += 26\n    total += 27\n    total += 28\n    total += 29\n    total += 30\n    total += 31\n    total += 32\n    total += 33\n    total += 34\n    total += 35\n    total += 36\n    total += 37\n    total += 38\n    total += 39\n    total += 40\n    total += 41\n    total += 42\n    total += 43\n    total += 44\n    total += 45\n    total += 46\n    total += 47\n    total += 48\n    total += 49\n    total += 50\n    total += 51\n    total += 52\n    total += 53\n    total += 54\n    total += 55\n    total += 56\n    total += 57\n    total += 58\n    total += 59\n    total += 60\n    return total\n",
+      "refactored": "def massive_calculation():\n    total = 0\n    total += 1\n    total += 2\n    total += 3\n    total += 4\n    total += 5\n    total += 6\n    total += 7\n    total += 8\n    total += 9\n    total += 10\n    total += 11\n    total += 12\n    total += 13\n    total += 14\n    total += 15\n    total += 16\n    total += 17\n    total += 18\n    total += 19\n    total += 20\n    total += 21\n    total += 22\n    total += 23\n    total += 24\n    total += 25\n    total += 26\n    total += 27\n    total += 28\n    total += 29\n    total += 30\n    _massive_calculation_part2()\n\ndef _massive_calculation_part2():\n    total += 31\n    total += 32\n    total += 33\n    total += 34\n    total += 35\n    total += 36\n    total += 37\n    total += 38\n    total += 39\n    total += 40\n    total += 41\n    total += 42\n    total += 43\n    total += 44\n    total += 45\n    total += 46\n    total += 47\n    total += 48\n    total += 49\n    total += 50\n    total += 51\n    total += 52\n    total += 53\n    total += 54\n    total += 55\n    total += 56\n    total += 57\n    total += 58\n    total += 59\n    total += 60\n    return total\n\n",
+      "diff": "--- a/long_method:massive_calculation+++ b/long_method:massive_calculation@@ -30,6 +30,9 @@     total += 28\n     total += 29\n     total += 30\n+    _massive_calculation_part2()\n+\n+def _massive_calculation_part2():\n     total += 31\n     total += 32\n     total += 33\n@@ -61,3 +64,4 @@     total += 59\n     total += 60\n     return total\n+\n",
+      "line_start": 1,
+      "line_end": 63,
+      "file": "examples\\long_method_example.py"
+    }
+  ],
+  "correlation_analysis": {
+    "correlation_matrix": {
+      "data_class": {
+        "data_class": 1.0,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": -0.2,
+        "feature_envy": -0.2,
+        "god_class": -0.2,
+        "hardcoded_secrets": -0.2,
+        "long_method": -0.2,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": -0.2
+      },
+      "deep_nesting": {
+        "data_class": 0.0,
+        "deep_nesting": 1.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": 0.0,
+        "feature_envy": 0.0,
+        "god_class": 0.0,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.0,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 0.0
+      },
+      "duplicate_code_blocks": {
+        "data_class": 0.0,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 1.0,
+        "exception_swallowing": 0.0,
+        "feature_envy": 0.0,
+        "god_class": 0.0,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.0,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 0.0
+      },
+      "exception_swallowing": {
+        "data_class": -0.2,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": 1.0,
+        "feature_envy": -0.2,
+        "god_class": -0.2,
+        "hardcoded_secrets": 1.0,
+        "long_method": -0.2,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 1.0
+      },
+      "feature_envy": {
+        "data_class": -0.2,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": -0.2,
+        "feature_envy": 1.0,
+        "god_class": -0.2,
+        "hardcoded_secrets": -0.2,
+        "long_method": -0.2,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": -0.2
+      },
+      "god_class": {
+        "data_class": -0.2,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": -0.2,
+        "feature_envy": -0.2,
+        "god_class": 1.0,
+        "hardcoded_secrets": -0.2,
+        "long_method": -0.2,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": -0.2
+      },
+      "hardcoded_secrets": {
+        "data_class": -0.2,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": 1.0,
+        "feature_envy": -0.2,
+        "god_class": -0.2,
+        "hardcoded_secrets": 1.0,
+        "long_method": -0.2,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 1.0
+      },
+      "long_method": {
+        "data_class": -0.2,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": -0.2,
+        "feature_envy": -0.2,
+        "god_class": -0.2,
+        "hardcoded_secrets": -0.2,
+        "long_method": 1.0,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": -0.2
+      },
+      "nested_loops": {
+        "data_class": 0.0,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": 0.0,
+        "feature_envy": 0.0,
+        "god_class": 0.0,
+        "hardcoded_secrets": 0.0,
+        "long_method": 0.0,
+        "nested_loops": 1.0,
+        "unsafe_eval_exec": 0.0
+      },
+      "unsafe_eval_exec": {
+        "data_class": -0.2,
+        "deep_nesting": 0.0,
+        "duplicate_code_blocks": 0.0,
+        "exception_swallowing": 1.0,
+        "feature_envy": -0.2,
+        "god_class": -0.2,
+        "hardcoded_secrets": 1.0,
+        "long_method": -0.2,
+        "nested_loops": 0.0,
+        "unsafe_eval_exec": 1.0
+      }
+    },
+    "hotspots": [
+      {
+        "file": "examples\\bad_example.py",
+        "risk_score": 80.75,
+        "smell_count": 3,
+        "smells_present": [
+          "unsafe_eval_exec",
+          "hardcoded_secrets",
+          "exception_swallowing"
+        ]
+      },
+      {
+        "file": "examples\\god_class_example.py",
+        "risk_score": 8.75,
+        "smell_count": 1,
+        "smells_present": [
+          "god_class"
+        ]
+      },
+      {
+        "file": "examples\\feature_envy_example.py",
+        "risk_score": 6.25,
+        "smell_count": 1,
+        "smells_present": [
+          "feature_envy"
+        ]
+      },
+      {
+        "file": "examples\\long_method_example.py",
+        "risk_score": 5.0,
+        "smell_count": 1,
+        "smells_present": [
+          "long_method"
+        ]
+      },
+      {
+        "file": "examples\\data_class_example.py",
+        "risk_score": 2.5,
+        "smell_count": 1,
+        "smells_present": [
+          "data_class"
+        ]
+      },
+      {
+        "file": "examples\\good_example.py",
+        "risk_score": 0.0,
+        "smell_count": 0,
+        "smells_present": []
+      }
+    ],
+    "interaction_graph_mermaid": "graph LR\n    data_class[\"data_class\"]:::low\n    deep_nesting[\"deep_nesting\"]:::medium\n    duplicate_code_blocks[\"duplicate_code_blocks\"]:::low\n    exception_swallowing[\"exception_swallowing\"]:::low\n    feature_envy[\"feature_envy\"]:::medium\n    god_class[\"god_class\"]:::high\n    hardcoded_secrets[\"hardcoded_secrets\"]:::high\n    long_method[\"long_method\"]:::medium\n    nested_loops[\"nested_loops\"]:::low\n    unsafe_eval_exec[\"unsafe_eval_exec\"]:::high\n    data_class --\"-0.20\"--> exception_swallowing\n    data_class --\"-0.20\"--> feature_envy\n    data_class --\"-0.20\"--> god_class\n    data_class --\"-0.20\"--> hardcoded_secrets\n    data_class --\"-0.20\"--> long_method\n    data_class --\"-0.20\"--> unsafe_eval_exec\n    exception_swallowing --\"-0.20\"--> feature_envy\n    exception_swallowing --\"-0.20\"--> god_class\n    exception_swallowing --\"+1.00\"--> hardcoded_secrets\n    exception_swallowing --\"-0.20\"--> long_method\n    exception_swallowing ==\"x1.7 | +1.00\"==> unsafe_eval_exec\n    feature_envy --\"-0.20\"--> god_class\n    feature_envy --\"-0.20\"--> hardcoded_secrets\n    feature_envy --\"-0.20\"--> long_method\n    feature_envy --\"-0.20\"--> unsafe_eval_exec\n    god_class --\"-0.20\"--> hardcoded_secrets\n    god_class ==\"x1.6 | -0.20\"==> long_method\n    god_class --\"-0.20\"--> unsafe_eval_exec\n    hardcoded_secrets --\"-0.20\"--> long_method\n    hardcoded_secrets ==\"x2.0 | +1.00\"==> unsafe_eval_exec\n    long_method --\"-0.20\"--> unsafe_eval_exec\n    classDef high fill:#ff6b6b,stroke:#c0392b,color:#fff\n    classDef medium fill:#f9ca24,stroke:#f39c12,color:#333\n    classDef low fill:#6ab04c,stroke:#27ae60,color:#fff",
+    "summary": {
+      "total_files_analyzed": 6,
+      "smell_totals": {
+        "long_method": 1,
+        "deep_nesting": 0,
+        "nested_loops": 0,
+        "unsafe_eval_exec": 1,
+        "hardcoded_secrets": 1,
+        "exception_swallowing": 1,
+        "duplicate_code_blocks": 0,
+        "god_class": 1,
+        "feature_envy": 1,
+        "data_class": 1
+      },
+      "top_co_occurring_pairs": [
+        {
+          "pair": [
+            "exception_swallowing",
+            "hardcoded_secrets"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.0
+        },
+        {
+          "pair": [
+            "exception_swallowing",
+            "unsafe_eval_exec"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 1.7
+        },
+        {
+          "pair": [
+            "hardcoded_secrets",
+            "unsafe_eval_exec"
+          ],
+          "co_occurrence_count": 1,
+          "correlation": 1.0,
+          "interaction_weight": 2.0
+        }
+      ],
+      "average_risk_score": 17.21,
+      "max_risk_score": 80.75
+    }
+  },
+  "ml_explanations": [
+    {
+      "smell_type": "unsafe_eval_exec",
+      "probability": 0.7905,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 1,
+          "shap_value": 0.8216,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": -0.0591,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": 0.0069,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "feature_envy",
+          "value": 0,
+          "shap_value": 0.0064,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "god_class",
+          "value": 0,
+          "shap_value": 0.004,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'unsafe_eval_exec' flagged (prob=0.79) because: unsafe_eval_exec=1 (increases risk, impact=+0.8216); exception_swallowing=1 (decreases risk, impact=-0.0591); duplicate_code_blocks=0 (increases risk, impact=+0.0069).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "hardcoded_secrets",
+      "probability": 0.8013,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "hardcoded_secrets",
+          "value": 1,
+          "shap_value": 0.7373,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": -0.0878,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "data_class",
+          "value": 0,
+          "shap_value": 0.0168,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 0,
+          "shap_value": 0.0165,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 1,
+          "shap_value": -0.0076,
+          "direction": "decreases risk"
+        }
+      ],
+      "explanation_text": "'hardcoded_secrets' flagged (prob=0.80) because: hardcoded_secrets=1 (increases risk, impact=+0.7373); exception_swallowing=1 (decreases risk, impact=-0.0878); data_class=0 (increases risk, impact=+0.0168).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "exception_swallowing",
+      "probability": 0.7713,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "exception_swallowing",
+          "value": 1,
+          "shap_value": 0.6738,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "hardcoded_secrets",
+          "value": 1,
+          "shap_value": -0.09,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 1,
+          "shap_value": -0.0746,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "long_method",
+          "value": 0,
+          "shap_value": -0.0103,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "god_class",
+          "value": 0,
+          "shap_value": 0.006,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'exception_swallowing' flagged (prob=0.77) because: exception_swallowing=1 (increases risk, impact=+0.6738); hardcoded_secrets=1 (decreases risk, impact=-0.0900); unsafe_eval_exec=1 (decreases risk, impact=-0.0746).",
+      "file": "examples\\bad_example.py"
+    },
+    {
+      "smell_type": "data_class",
+      "probability": 0.9058,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "data_class",
+          "value": 1,
+          "shap_value": 0.8677,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "hardcoded_secrets",
+          "value": 0,
+          "shap_value": 0.0174,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 0,
+          "shap_value": 0.0059,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "god_class",
+          "value": 0,
+          "shap_value": 0.0046,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": 0.0024,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'data_class' flagged (prob=0.91) because: data_class=1 (increases risk, impact=+0.8677); hardcoded_secrets=0 (increases risk, impact=+0.0174); deep_nesting=0 (increases risk, impact=+0.0059).",
+      "file": "examples\\data_class_example.py"
+    },
+    {
+      "smell_type": "feature_envy",
+      "probability": 0.9066,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "feature_envy",
+          "value": 1,
+          "shap_value": 0.8692,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": 0.0143,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "long_method",
+          "value": 0,
+          "shap_value": 0.0073,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "hardcoded_secrets",
+          "value": 0,
+          "shap_value": 0.0073,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 0,
+          "shap_value": 0.0059,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'feature_envy' flagged (prob=0.91) because: feature_envy=1 (increases risk, impact=+0.8692); duplicate_code_blocks=0 (increases risk, impact=+0.0143); long_method=0 (increases risk, impact=+0.0073).",
+      "file": "examples\\feature_envy_example.py"
+    },
+    {
+      "smell_type": "god_class",
+      "probability": 0.8968,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "god_class",
+          "value": 1,
+          "shap_value": 0.8764,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 0,
+          "shap_value": 0.0168,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": 0.0112,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "deep_nesting",
+          "value": 0,
+          "shap_value": 0.0102,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "data_class",
+          "value": 0,
+          "shap_value": 0.0065,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'god_class' flagged (prob=0.90) because: god_class=1 (increases risk, impact=+0.8764); exception_swallowing=0 (increases risk, impact=+0.0168); duplicate_code_blocks=0 (increases risk, impact=+0.0112).",
+      "file": "examples\\god_class_example.py"
+    },
+    {
+      "smell_type": "long_method",
+      "probability": 0.9495,
+      "prediction_source": "ensemble",
+      "shap_explanation": [
+        {
+          "feature": "long_method",
+          "value": 1,
+          "shap_value": 0.7876,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "duplicate_code_blocks",
+          "value": 0,
+          "shap_value": -0.0028,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "exception_swallowing",
+          "value": 0,
+          "shap_value": -0.0027,
+          "direction": "decreases risk"
+        },
+        {
+          "feature": "unsafe_eval_exec",
+          "value": 0,
+          "shap_value": 0.0024,
+          "direction": "increases risk"
+        },
+        {
+          "feature": "feature_envy",
+          "value": 0,
+          "shap_value": 0.0019,
+          "direction": "increases risk"
+        }
+      ],
+      "explanation_text": "'long_method' flagged (prob=0.95) because: long_method=1 (increases risk, impact=+0.7876); duplicate_code_blocks=0 (decreases risk, impact=-0.0028); exception_swallowing=0 (decreases risk, impact=-0.0027).",
+      "file": "examples\\long_method_example.py"
+    }
+  ]
+}

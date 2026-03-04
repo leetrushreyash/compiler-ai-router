@@ -1,0 +1,3 @@
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .venv\Scripts\Activate.ps1
+python train_model.py
+python -m code_smell_compiler.main examples --use-ml --refactor --correlate --explain

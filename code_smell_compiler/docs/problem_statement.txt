@@ -1,0 +1,22 @@
+
+
+This project is an ML-Driven Code Smell Detection Compiler developed by a BTech CSE student.
+
+Problem description
+The goal is to implement a static analysis tool that identifies insecure or poor coding practices in Python projects. The tool performs source-only analysis using Python's AST module, identifies patterns such as use of eval, hardcoded secrets, overly long functions, and similar code smells, and reports their locations in a structured JSON format suitable for developer review or CI integration.
+
+Motivation
+Manual code reviews can overlook subtle or repetitive issues. This tool aims to assist developers by automatically surfacing risky code snippets and by being simple to run on a local machine.
+
+Functionality summary
+The tool parses Python files into ASTs, extracts interpretable features (for example function length and nesting depth), applies deterministic rule-based detectors, and optionally applies small ML models trained on synthetic examples. The output includes fields: `file`, `line_number`, `smell_type`, `severity`, `confidence`, and `suggested_fix`.
+
+Notes and constraints
+The analyzer does not execute code; it inspects source text only. The models included are lightweight (RandomForest and LogisticRegression) to enable local training and inference.
+
+Quick verification
+1. Train the models: `python train_model.py`.
+2. Run the analyzer: `python -m code_smell_compiler.main examples --use-ml`.
+3. Review the resulting `report.json` for detected issues.
+
+

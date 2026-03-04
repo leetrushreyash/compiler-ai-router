@@ -1,0 +1,121 @@
+Software Requirements Specification (SRS)
+ML-Driven Code Smell Detection Compiler
+
+1. Introduction
+1.1 Purpose
+This SRS specifies functional and non-functional requirements for the "ML-Driven Code Smell Detection Compiler" project. The system analyzes Python source code using AST-based parsing, rule-based detectors, and machine learning models to identify code smells and potential security issues, and produces structured reports.
+
+1.2 Scope
+The system provides:
+- Static parsing and AST feature extraction for Python source files.
+- Rule-based detectors for a small set of security and maintainability smells (e.g., use of `eval`/`exec`, hard-coded secrets, exception swallowing, very long functions, deep nesting, duplicated functions).
+- A machine-learning pipeline trained on a synthetic dataset for probabilistic smell detection and classification.
+- Aggregated JSON and DOCX reports enumerating findings with file, line number, smell type, severity, confidence, and suggested fix.
+
+1.3 Definitions, Acronyms, and Abbreviations
+- AST: Abstract Syntax Tree
+- SRS: Software Requirements Specification
+- ML: Machine Learning
+- CLI: Command Line Interface
+
+2. Overall Description
+2.1 Product Perspective
+This project is a standalone static analysis tool implemented in Python. Key modules include:
+- `parser/parser.py` — parsing source into ASTs;
+- `ast_analysis/ast_utils.py` — AST heuristics and detectors;
+- `feature_extraction/extractor.py` — numeric feature vector and location extractor;
+- `static_analyzer/rule_based.py` — deterministic checks and suggestions;
+- `ml_model/train.py` & `ml_model/model_utils.py` — dataset generation, training, and model loading;
+- `reporting/report.py` — JSON report formatter;
+- `main.py` — CLI orchestrator.
+
+2.2 User Characteristics
+Target users are undergraduate or graduate students and developers seeking automated early feedback about risky or poor coding patterns. Users are expected to have Python installed and be comfortable running CLI scripts.
+
+2.3 Constraints
+- Language: Python 3.8+ (tested on Python 3.10+ and 3.14)
+- Dependencies: `numpy`, `pandas`, `scikit-learn`, `joblib`, `python-docx`.
+- The ML models are trained on synthetic data and may not generalize to all real-world code without retraining on real labeled examples.
+
+2.4 Assumptions and Dependencies
+- Source code to analyze is syntactically valid Python.
+- Users will run `train_model.py` to re-train models if they need different behavior.
+
+3. Specific Requirements
+3.1 Functional Requirements
+FR1: Source Parsing
+- The system shall parse Python files into ASTs using the `parser` module.
+- On parse error, the system shall skip the file and log an error entry in the final report.
+
+FR2: Rule-based Detection
+- The system shall apply deterministic rules implemented in `static_analyzer/rule_based.py` to detect: `unsafe_eval_exec`, `hardcoded_secrets`, `exception_swallowing`, `long_function`, `deep_nesting`, and `duplicate_function`.
+- For each rule-based finding the report shall include: `file`, `line_number`, `smell_type`, `severity` (low/medium/high), `confidence` (1.0), and `suggested_fix`.
+
+FR3: Feature Extraction
+- The system shall extract numeric features from AST nodes using `feature_extraction/extractor.py`. Features include: function length, max nesting, count of `eval`/`exec` usage, string literals with high entropy, catch-all except blocks, and AST hash/structure signatures for duplication detection.
+- The extractor shall also return source `locations` (line numbers) for detected constructs to populate findings.
+
+FR4: Machine-Learning Detection
+- The system shall load trained models from `ml_model/models/models.pkl` and use them to predict smell labels and probabilities for each code unit.
+- ML predictions shall be merged with rule-based findings; ML-derived findings shall include a `confidence` score between 0.0 and 1.0.
+
+FR5: Reporting
+- The system shall output a JSON report with an array of findings. Each finding must contain: `file`, `line_number`, `smell_type`, `severity`, `confidence`, `suggested_fix`.
+- The system shall optionally produce a DOCX summary placed under `code_smell_compiler/docs/`.
+
+3.2 Non-functional Requirements
+NFR1: Performance
+- For a codebase with N files and total S lines, the system shall complete analysis in O(S) AST traversal time per file; practical runtime depends on file size and available CPU.
+
+NFR2: Reliability
+- The tool shall handle parse errors gracefully without crashing the entire run.
+
+NFR3: Maintainability
+- The codebase shall be modular: parsers, analyzers, feature extraction, ML models, and reporting are separate modules to facilitate updates.
+
+NFR4: Portability
+- The tool shall run on Windows, macOS, and Linux where Python 3.8+ is available.
+
+4. External Interface Requirements
+4.1 CLI
+- `main.py` shall expose flags: `--path` (source path), `--ml` (enable ML), `--output` (report path), and `--train` (run training pipeline).
+
+4.2 File Formats
+- Input: `.py` files and directories.
+- Output: JSON (primary), DOCX (optional summary).
+
+5. System Architecture
+5.1 High-level Components
+- Parser → AST Analyzer → Feature Extractor → (Rule-based Detector + ML Detector) → Finder Aggregator → Reporter.
+
+5.2 Data Flow
+- For each file: parse → extract features & locations → run rules → if ML enabled, vectorize and predict → aggregate findings → append to report.
+
+6. Data Requirements
+- Trained models: `ml_model/models/models.pkl` (persisted sklearn models and scaler).
+- Synthetic dataset is produced under `code_smell_compiler/ml_model/data/` by `ml_model/dataset.py` and used by `ml_model/train.py`.
+
+7. Use Cases
+UC1: Single-file analysis
+- User runs: `python main.py --path examples/bad_example.py --ml` → outputs `report.json`.
+
+UC2: Re-train models
+- User runs: `python train_model.py` → regenerates dataset, trains models, saves `models.pkl` and `metrics.json`.
+
+8. Acceptance Criteria
+- The repository contains a runnable `main.py` that generates JSON reports for the example files.
+- `train_model.py` completes training and writes `ml_model/models/models.pkl`.
+- Rule-based detectors produce expected findings on `examples/bad_example.py` (e.g., `unsafe_eval_exec`, `hardcoded_secrets`).
+- Documentation includes this SRS under `code_smell_compiler/docs/SRS.txt`.
+
+9. Risks and Mitigations
+- Risk: ML models trained on synthetic data may produce false positives/negatives.
+  Mitigation: Provide clear documentation to retrain models with labeled data; mark ML findings with confidence scores.
+- Risk: AST heuristics may miss context-sensitive vulnerabilities.
+  Mitigation: Recommend integration with dynamic analysis or human review for high severity findings.
+
+10. Appendices
+- A: Directory map and key files: `main.py`, `train_model.py`, `code_smell_compiler/parser/parser.py`, `code_smell_compiler/ast_analysis/ast_utils.py`, `code_smell_compiler/feature_extraction/extractor.py`, `code_smell_compiler/ml_model/train.py`, `code_smell_compiler/static_analyzer/rule_based.py`, `code_smell_compiler/reporting/report.py`.
+
+Prepared by: Project automation agent
+Date: 2026-01-24
