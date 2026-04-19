@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compiler Engine - Static Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-light: #f8fafc;
+            --panel-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --accent: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border-light: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-weight: 800;
+            margin: 0;
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-light);
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            resize: vertical;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button.primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button.primary:hover { background: #2563eb; }
+        button.primary:active { transform: scale(0.98); }
+
+        #file-upload { display: none; }
+        .upload-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px dashed var(--border-light);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .upload-btn:hover { color: var(--text-dark); border-color: var(--text-dark); background: #f1f5f9; }
+
+        /* Results Panel */
+        .results-hidden {
+            display: none;
+        }
+
+        #final-verdict {
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .verdict-clean { color: var(--success); border-color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important; }
+        .verdict-smelly { color: var(--danger); border-color: var(--danger); background-color: rgba(239, 68, 68, 0.1) !important; }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+
+        .smell-tags {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Compiler Toolchain Dashboard</h1>
+        <p class="subtitle">Extract metrics from C++ code and evaluate DSL Code Smells</p>
+    </header>
+
+    <div class="container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <h2>Source Code Input</h2>
+            <textarea id="code-input" placeholder="Paste your C++ code here..."></textarea>
+            
+            <div class="actions">
+                <label for="file-upload" class="upload-btn">Upload .cpp File</label>
+                <input type="file" id="file-upload" accept=".cpp,.h,.c">
+                <button class="primary" onclick="analyzeCode()">Analyze Extracted Metrics</button>
+            </div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel" id="output-panel">
+            <h2>Analysis Results</h2>
+            <div id="loading" style="display: none; text-align: center; color: var(--accent);">Analyzing parsing phases...</div>
+            
+            <div id="results-content" class="results-hidden">
+                <div id="final-verdict" class="verdict-clean">
+                    RESULT: CLEAN CODE
+                </div>
+
+                <div class="smell-tags" id="smell-tags-container">
+                    <!-- Tags injected here -->
+                </div>
+
+                <h3 style="margin-top: 1.5rem; font-size: 1rem; color: var(--text-muted);">Extracted Metrics</h3>
+                <div class="chart-container">
+                    <canvas id="metricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let radarChart = null;
+
+        // Handle File Upload
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Update label to show file name
+            const label = document.querySelector('.upload-btn');
+            label.textContent = 'File: ' + file.name;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('code-input').value = e.target.result;
+            };
+            reader.readAsText(file);
+        });
+
+        async function analyzeCode() {
+            const code = document.getElementById('code-input').value;
+            if (!code.trim()) {
+                alert("Please drop some C++ code first!");
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results-content').classList.add('results-hidden');
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    renderResults(data);
+                }
+            } catch (err) {
+                alert("Server error. Is the Flask app running?");
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function renderResults(data) {
+            document.getElementById('results-content').classList.remove('results-hidden');
+            
+            // Global Verdict
+            const verdictEl = document.getElementById('final-verdict');
+            if (data.is_smelly) {
+                verdictEl.textContent = "WARNING: HIGH SEVERITY ISSUES DETECTED";
+                verdictEl.className = "verdict-smelly";
+            } else {
+                verdictEl.textContent = "CLEAN CODE (All Clear)";
+                verdictEl.className = "verdict-clean";
+            }
+
+            // Function Cards Container
+            const tagsContainer = document.getElementById('smell-tags-container');
+            tagsContainer.innerHTML = '';
+            
+            if (!data.ast_results || !data.ast_results.functions || data.ast_results.functions.length === 0) {
+                tagsContainer.innerHTML = '<p style="color:var(--text-muted)">No functions detected in code.</p>';
+                return;
+            }
+
+            // Build beautifully customized function cards natively analyzing API payloads
+            data.ast_results.functions.forEach(func => {
+                const card = document.createElement('div');
+                card.style.background = "#ffffff";
+                card.style.border = "1px solid #e2e8f0";
+                card.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)";
+                card.style.borderRadius = "8px";
+                card.style.padding = "1rem";
+                card.style.marginTop = "1rem";
+                card.style.width = "100%";
+                card.style.boxSizing = "border-box";
+                
+                let smellTag = func.code_smell.is_smelly ? `<span style="color:#ef4444; font-weight:bold;">[ML SMELL DETECTED] (${func.code_smell.classification})</span>` : `<span style="color:#10b981; font-weight:bold;">[No Smell Detected]</span>`;
+                
+                let securityHTML = '';
+                if (func.security.has_vulnerabilities) {
+                    securityHTML = `<div style="margin-top:0.8rem; background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #ef4444; padding: 0.8rem; border-radius: 4px;">
+                        <strong style="color: #b91c1c;">⚠ SECURITY VULNERABILITIES FOUND:</strong><ul style="margin: 0.5rem 0 0 0; color: #991b1b;">`;
+                    func.security.issues.forEach(issue => {
+                        let lineStr = issue.line ? ` <span style="color:#ef4444; font-size:0.85em;">(Line ${issue.line})</span>` : '';
+                        securityHTML += `<li style="margin-bottom: 0.3rem;">${issue.message}${lineStr}</li>`;
+                    });
+                    securityHTML += `</ul></div>`;
+                }
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                        <strong style="color:#4f46e5; font-size:1.1rem; font-family:monospace;">${func.name}()</strong>
+                        <span style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 0.2rem 0.6rem; border-radius: 12px; font-size:0.8rem; font-weight:bold;">Severity: ${func.overall_severity}</span>
+                    </div>
+                    <div style="margin-bottom: 0.5rem;">${smellTag} <span style="color:#64748b; font-size:0.9rem;">(Confidence: ${func.code_smell.probability_score}%)</span></div>
+                    <div style="display:flex; gap: 1rem; color: #64748b; font-size:0.9rem; font-weight: 500;">
+                        <span>Nodes: ${func.code_smell.metrics.total_ast_nodes}</span>
+                        <span>Depth: ${func.code_smell.metrics.max_depth}</span>
+                        <span>Loops: ${func.code_smell.metrics.loop_count}</span>
+                        <span>Ifs: ${func.code_smell.metrics.if_count}</span>
+                    </div>
+                    ${securityHTML}
+                `;
+                tagsContainer.appendChild(card);
+            });
+
+            // (Chart is disabled in this phase since function cards provide deeper value)
+            const canvasContainer = document.querySelector('.chart-container');
+            if (canvasContainer) { canvasContainer.style.display = 'none'; }
+        }
+    </script>
+</body>
+</html>

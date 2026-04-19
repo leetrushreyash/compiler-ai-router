@@ -1,0 +1,253 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> statements
+Rule 1     statements -> statements statement
+Rule 2     statements -> statement
+Rule 3     statement -> RULE ID EQUALS expression
+Rule 4     expression -> expression AND condition
+Rule 5     expression -> expression OR condition
+Rule 6     expression -> condition
+Rule 7     condition -> ID GT NUMBER
+Rule 8     condition -> ID LT NUMBER
+Rule 9     condition -> ID GTE NUMBER
+Rule 10    condition -> ID LTE NUMBER
+
+Terminals, with rules where they appear
+
+AND                  : 4
+EQUALS               : 3
+GT                   : 7
+GTE                  : 9
+ID                   : 3 7 8 9 10
+LT                   : 8
+LTE                  : 10
+NUMBER               : 7 8 9 10
+OR                   : 5
+RULE                 : 3
+error                : 
+
+Nonterminals, with rules where they appear
+
+condition            : 4 5 6
+expression           : 3 4 5
+statement            : 1 2
+statements           : 1 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . statements
+    (1) statements -> . statements statement
+    (2) statements -> . statement
+    (3) statement -> . RULE ID EQUALS expression
+
+    RULE            shift and go to state 3
+
+    statements                     shift and go to state 1
+    statement                      shift and go to state 2
+
+state 1
+
+    (0) S' -> statements .
+    (1) statements -> statements . statement
+    (3) statement -> . RULE ID EQUALS expression
+
+    RULE            shift and go to state 3
+
+    statement                      shift and go to state 4
+
+state 2
+
+    (2) statements -> statement .
+
+    RULE            reduce using rule 2 (statements -> statement .)
+    $end            reduce using rule 2 (statements -> statement .)
+
+
+state 3
+
+    (3) statement -> RULE . ID EQUALS expression
+
+    ID              shift and go to state 5
+
+
+state 4
+
+    (1) statements -> statements statement .
+
+    RULE            reduce using rule 1 (statements -> statements statement .)
+    $end            reduce using rule 1 (statements -> statements statement .)
+
+
+state 5
+
+    (3) statement -> RULE ID . EQUALS expression
+
+    EQUALS          shift and go to state 6
+
+
+state 6
+
+    (3) statement -> RULE ID EQUALS . expression
+    (4) expression -> . expression AND condition
+    (5) expression -> . expression OR condition
+    (6) expression -> . condition
+    (7) condition -> . ID GT NUMBER
+    (8) condition -> . ID LT NUMBER
+    (9) condition -> . ID GTE NUMBER
+    (10) condition -> . ID LTE NUMBER
+
+    ID              shift and go to state 7
+
+    expression                     shift and go to state 8
+    condition                      shift and go to state 9
+
+state 7
+
+    (7) condition -> ID . GT NUMBER
+    (8) condition -> ID . LT NUMBER
+    (9) condition -> ID . GTE NUMBER
+    (10) condition -> ID . LTE NUMBER
+
+    GT              shift and go to state 10
+    LT              shift and go to state 11
+    GTE             shift and go to state 12
+    LTE             shift and go to state 13
+
+
+state 8
+
+    (3) statement -> RULE ID EQUALS expression .
+    (4) expression -> expression . AND condition
+    (5) expression -> expression . OR condition
+
+    RULE            reduce using rule 3 (statement -> RULE ID EQUALS expression .)
+    $end            reduce using rule 3 (statement -> RULE ID EQUALS expression .)
+    AND             shift and go to state 14
+    OR              shift and go to state 15
+
+
+state 9
+
+    (6) expression -> condition .
+
+    AND             reduce using rule 6 (expression -> condition .)
+    OR              reduce using rule 6 (expression -> condition .)
+    RULE            reduce using rule 6 (expression -> condition .)
+    $end            reduce using rule 6 (expression -> condition .)
+
+
+state 10
+
+    (7) condition -> ID GT . NUMBER
+
+    NUMBER          shift and go to state 16
+
+
+state 11
+
+    (8) condition -> ID LT . NUMBER
+
+    NUMBER          shift and go to state 17
+
+
+state 12
+
+    (9) condition -> ID GTE . NUMBER
+
+    NUMBER          shift and go to state 18
+
+
+state 13
+
+    (10) condition -> ID LTE . NUMBER
+
+    NUMBER          shift and go to state 19
+
+
+state 14
+
+    (4) expression -> expression AND . condition
+    (7) condition -> . ID GT NUMBER
+    (8) condition -> . ID LT NUMBER
+    (9) condition -> . ID GTE NUMBER
+    (10) condition -> . ID LTE NUMBER
+
+    ID              shift and go to state 7
+
+    condition                      shift and go to state 20
+
+state 15
+
+    (5) expression -> expression OR . condition
+    (7) condition -> . ID GT NUMBER
+    (8) condition -> . ID LT NUMBER
+    (9) condition -> . ID GTE NUMBER
+    (10) condition -> . ID LTE NUMBER
+
+    ID              shift and go to state 7
+
+    condition                      shift and go to state 21
+
+state 16
+
+    (7) condition -> ID GT NUMBER .
+
+    AND             reduce using rule 7 (condition -> ID GT NUMBER .)
+    OR              reduce using rule 7 (condition -> ID GT NUMBER .)
+    RULE            reduce using rule 7 (condition -> ID GT NUMBER .)
+    $end            reduce using rule 7 (condition -> ID GT NUMBER .)
+
+
+state 17
+
+    (8) condition -> ID LT NUMBER .
+
+    AND             reduce using rule 8 (condition -> ID LT NUMBER .)
+    OR              reduce using rule 8 (condition -> ID LT NUMBER .)
+    RULE            reduce using rule 8 (condition -> ID LT NUMBER .)
+    $end            reduce using rule 8 (condition -> ID LT NUMBER .)
+
+
+state 18
+
+    (9) condition -> ID GTE NUMBER .
+
+    AND             reduce using rule 9 (condition -> ID GTE NUMBER .)
+    OR              reduce using rule 9 (condition -> ID GTE NUMBER .)
+    RULE            reduce using rule 9 (condition -> ID GTE NUMBER .)
+    $end            reduce using rule 9 (condition -> ID GTE NUMBER .)
+
+
+state 19
+
+    (10) condition -> ID LTE NUMBER .
+
+    AND             reduce using rule 10 (condition -> ID LTE NUMBER .)
+    OR              reduce using rule 10 (condition -> ID LTE NUMBER .)
+    RULE            reduce using rule 10 (condition -> ID LTE NUMBER .)
+    $end            reduce using rule 10 (condition -> ID LTE NUMBER .)
+
+
+state 20
+
+    (4) expression -> expression AND condition .
+
+    AND             reduce using rule 4 (expression -> expression AND condition .)
+    OR              reduce using rule 4 (expression -> expression AND condition .)
+    RULE            reduce using rule 4 (expression -> expression AND condition .)
+    $end            reduce using rule 4 (expression -> expression AND condition .)
+
+
+state 21
+
+    (5) expression -> expression OR condition .
+
+    AND             reduce using rule 5 (expression -> expression OR condition .)
+    OR              reduce using rule 5 (expression -> expression OR condition .)
+    RULE            reduce using rule 5 (expression -> expression OR condition .)
+    $end            reduce using rule 5 (expression -> expression OR condition .)
+
