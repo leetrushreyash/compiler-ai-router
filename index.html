@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Smell Compiler - Global Launcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-4xl w-full bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700">
+        <h1 class="text-4xl font-extrabold text-blue-400 text-center mb-4">Unified AI Analytics Launcher</h1>
+        <p class="text-center text-gray-400 mb-8">Enter your code below. We'll instantly evaluate its characteristics and launch the dedicated Engine specialized for your needs.</p>
+        
+        <textarea id="code-input" rows="8" class="w-full bg-gray-900 border border-gray-600 rounded-lg p-4 text-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6" placeholder="// Paste your Python, C++, or JS/Java code here to auto-route..."></textarea>
+        
+        <button id="route-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-lg shadow-lg transition duration-200 text-xl mb-12 flex items-center justify-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            Auto-Detect & Launch Dashboard
+        </button>
+
+        <!-- Manual Overrides -->
+        <h2 class="text-gray-500 text-sm tracking-widest uppercase text-center mb-4">Or manually open a dashboard</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Project A -->
+            <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 hover:border-blue-500 cursor-pointer transition transform hover:-translate-y-1" onclick="window.open('http://localhost:5174/', '_blank')">
+                <div class="mb-3 text-blue-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-200 mb-2">Project A</h3>
+                <p class="text-sm text-gray-400">Python AST Explainer & Energy Metrics UI</p>
+                <div class="mt-4 text-xs bg-gray-800 p-2 rounded inline-block text-blue-300 border border-blue-900/50">localhost:5174</div>
+            </div>
+            
+            <!-- Project B -->
+            <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 hover:border-purple-500 cursor-pointer transition transform hover:-translate-y-1" onclick="window.open('http://localhost:5002/', '_blank')">
+                <div class="mb-3 text-purple-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-200 mb-2">Project B</h3>
+                <p class="text-sm text-gray-400">ML-Driven Model Selector & Autofixer</p>
+                <div class="mt-4 text-xs bg-gray-800 p-2 rounded inline-block text-purple-300 border border-purple-900/50">localhost:5002</div>
+            </div>
+
+            <!-- Project C -->
+            <div class="bg-gray-900 p-6 rounded-lg border border-gray-700 hover:border-red-500 cursor-pointer transition transform hover:-translate-y-1" onclick="window.open('http://localhost:5001/', '_blank')">
+                <div class="mb-3 text-red-500">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-200 mb-2">Project C</h3>
+                <p class="text-sm text-gray-400">C/C++ Deep Security Audits</p>
+                <div class="mt-4 text-xs bg-gray-800 p-2 rounded inline-block text-red-300 border border-red-900/50">localhost:5001</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('route-btn').addEventListener('click', () => {
+            const code = document.getElementById('code-input').value;
+            const routeBtn = document.getElementById('route-btn');
+            const originalText = routeBtn.innerHTML;
+            
+            // Animation for UX
+            routeBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Detecting Language...';
+            
+            setTimeout(() => {
+                if (code.includes('#include') || code.includes('std::') || code.includes('cout <<') || code.includes('printf(')) {
+                    // Route to C++ Project
+                    window.open('http://localhost:5001/', '_blank');
+                    routeBtn.innerHTML = originalText;
+                }
+                else if (code.includes('import ') || code.includes('def ') || code.includes('print(') || code.includes('class ')) {
+                    // Route to Python Project
+                    window.open('http://localhost:5174/', '_blank');
+                    routeBtn.innerHTML = originalText;
+                }
+                else if (code.trim() !== '') {
+                    // Fallback to ML/JS Project
+                    window.open('http://localhost:5002/', '_blank');
+                    routeBtn.innerHTML = originalText;
+                } else {
+                    alert('Please paste some code first so we can route you!');
+                    routeBtn.innerHTML = originalText;
+                }
+            }, 600);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{
+  "comparison": {
+    "randomforest": {
+      "accuracy_mean": 0.7277777777777779,
+      "accuracy_std": 0.04082482904638632,
+      "f1_mean": 0.7190756828501927,
+      "f1_std": 0.039501140175457465,
+      "precision_mean": 0.7540123456790123,
+      "recall_mean": 0.7277777777777779,
+      "train_accuracy_mean": 0.9305555555555556,
+      "fold_scores": [
+        0.6944444444444444,
+        0.7777777777777778,
+        0.6944444444444444,
+        0.6944444444444444,
+        0.7777777777777778
+      ]
+    },
+    "svm": {
+      "accuracy_mean": 0.7166666666666666,
+      "accuracy_std": 0.06431020501550128,
+      "f1_mean": 0.6982492716071147,
+      "f1_std": 0.06879307386616922,
+      "precision_mean": 0.7503735153735154,
+      "recall_mean": 0.7166666666666666,
+      "train_accuracy_mean": 0.8,
+      "fold_scores": [
+        0.6944444444444444,
+        0.7222222222222222,
+        0.6944444444444444,
+        0.6388888888888888,
+        0.8333333333333334
+      ]
+    }
+  },
+  "label_names": [
+    "hardcoded_secrets",
+    "sql_injection_risk",
+    "unsafe_deserialization",
+    "null_pointer_risk",
+    "dead_code",
+    "clean",
+    "god_object",
+    "long_method"
+  ]
+}

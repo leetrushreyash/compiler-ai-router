@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Code Smell Detection Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="app-shell">
+    <aside class="sidebar panel">
+      <div class="brand">
+        <p class="badge">ML + Rule Hybrid Scanner</p>
+        <h1>Sentinel Compiler</h1>
+        <p>Security smell intelligence for source code.</p>
+      </div>
+
+      <nav class="nav-list" aria-label="Primary navigation">
+        <a href="#section-dashboard" class="nav-link active" data-nav="dashboard">Dashboard</a>
+        <a href="#section-analyze" class="nav-link" data-nav="analyze">Analyze</a>
+        <a href="#section-viewer" class="nav-link" data-nav="viewer">Code Viewer</a>
+        <a href="#section-history" class="nav-link" data-nav="history">History</a>
+        <a href="#section-risk" class="nav-link" data-nav="risk">Risk Matrix</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <span>Bundled test files</span>
+        <strong id="sampleCount">{{ sample_count }}</strong>
+      </div>
+    </aside>
+
+    <main class="content-area">
+      <header class="hero panel">
+        <div>
+          <h2>Code Smell Detection Dashboard</h2>
+          <p class="subtitle">Analyze pasted code or selected project test files, then inspect exact vulnerable lines in the integrated viewer.</p>
+        </div>
+      </header>
+
+      <section id="section-dashboard" class="panel">
+        <div class="section-title">
+          <h3>Dashboard</h3>
+          <p>Live scan metrics and severity distribution.</p>
+        </div>
+
+        <div class="kpis">
+          <article class="kpi-card">
+            <span>Files analyzed</span>
+            <strong id="kpiFiles">0</strong>
+          </article>
+          <article class="kpi-card">
+            <span>Total issues</span>
+            <strong id="kpiTotal">0</strong>
+          </article>
+          <article class="kpi-card high">
+            <span>HIGH</span>
+            <strong id="kpiHigh">0</strong>
+          </article>
+          <article class="kpi-card medium">
+            <span>MEDIUM</span>
+            <strong id="kpiMedium">0</strong>
+          </article>
+          <article class="kpi-card low">
+            <span>LOW</span>
+            <strong id="kpiLow">0</strong>
+          </article>
+        </div>
+
+        <div class="severity-bars">
+          <div><span>HIGH</span><div class="bar"><i id="barHigh"></i></div></div>
+          <div><span>MEDIUM</span><div class="bar"><i id="barMedium"></i></div></div>
+          <div><span>LOW</span><div class="bar"><i id="barLow"></i></div></div>
+        </div>
+
+        <div class="vuln-grid" id="vulnCards"></div>
+
+        <div class="charts-grid">
+          <article class="chart-card">
+            <h4>Severity Mix</h4>
+            <canvas id="severityPieChart" height="220"></canvas>
+          </article>
+          <article class="chart-card">
+            <h4>Smell Occurrence</h4>
+            <canvas id="smellBarChart" height="220"></canvas>
+          </article>
+        </div>
+
+        <div class="complexity-grid">
+          <article class="metric-card"><span>Avg Cyclomatic Complexity</span><strong id="complexityCyclomatic">0</strong></article>
+          <article class="metric-card"><span>Avg Function Length</span><strong id="complexityLength">0</strong></article>
+          <article class="metric-card"><span>Avg Nesting Depth</span><strong id="complexityNesting">0</strong></article>
+          <article class="metric-card"><span>Avg Issue Density</span><strong id="complexityDensity">0</strong></article>
+          <article class="metric-card"><span>Avg Risk Score</span><strong id="riskAverage">0</strong></article>
+          <article class="metric-card"><span>Max Risk Score</span><strong id="riskMaximum">0</strong></article>
+        </div>
+
+        <div class="meta-row">
+          <span id="scanMeta">No scan yet.</span>
+        </div>
+      </section>
+
+      <section id="section-analyze" class="panel controls">
+        <div class="section-title">
+          <h3>Analyze</h3>
+          <p>Choose source mode and run detection.</p>
+        </div>
+
+        <div class="mode-switch" role="tablist">
+          <button class="mode-btn active" data-mode="code">Paste Code</button>
+          <button class="mode-btn" data-mode="samples">Select Test Files</button>
+        </div>
+
+        <div class="settings-grid">
+          <label>
+            Min confidence
+            <input id="minConfidence" type="number" min="0" max="1" step="0.05" value="0.7">
+          </label>
+          <label>
+            Model
+            <select id="modelName">
+              <option value="auto" selected>auto</option>
+              <option value="randomforest">randomforest</option>
+              <option value="svm">svm</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="agent-panel" id="agentPanel">
+          <div class="agent-copy">
+            <span class="agent-kicker">Agentic AI</span>
+            <h4 id="agentModelTitle">Auto-select model</h4>
+            <p id="agentModelReason">Paste code and the frontend will choose the best ML model from the code profile.</p>
+          </div>
+          <ul id="agentSuggestions" class="agent-suggestions"></ul>
+        </div>
+
+        <div class="agent-actions">
+          <button id="recommendModelBtn" class="ghost-btn" type="button">Suggest best model</button>
+        </div>
+
+        <label class="checkline">
+          <input id="useMl" type="checkbox">
+          Use ML analysis along with rules
+        </label>
+
+        <div id="codeMode" class="mode-panel active">
+          <label>
+            Virtual filename
+            <input id="virtualFilename" type="text" value="inline_input.py" placeholder="example.py">
+          </label>
+          <label>
+            Python code
+            <textarea id="codeInput" rows="12" placeholder="Paste Python code here..."></textarea>
+          </label>
+          <button id="analyzeCodeBtn" class="action-btn">Analyze Code</button>
+        </div>
+
+        <div id="samplesMode" class="mode-panel">
+          <div class="sample-actions">
+            <button id="selectAllBtn" class="ghost-btn" type="button">Select All</button>
+            <button id="clearAllBtn" class="ghost-btn" type="button">Clear</button>
+          </div>
+          <div id="sampleList" class="sample-list"></div>
+          <button id="analyzeFilesBtn" class="action-btn">Analyze Selected Files</button>
+        </div>
+      </section>
+
+      <section id="section-viewer" class="panel">
+        <div class="section-title">
+          <h3>Code Viewer</h3>
+          <p>Highlighted lines indicate detected smells by severity.</p>
+        </div>
+        <div class="viewer-toolbar">
+          <label>
+            Source file
+            <select id="viewerSourceSelect"></select>
+          </label>
+        </div>
+        <div id="codeViewer" class="code-viewer"></div>
+      </section>
+
+      <section id="section-history" class="panel">
+        <div class="section-title">
+          <h3>History</h3>
+          <p>Recent scans for quick comparison.</p>
+        </div>
+        <div id="historyList" class="history-list">
+          <p class="empty-history">No scans yet.</p>
+        </div>
+      </section>
+
+      <section id="section-risk" class="panel">
+        <div class="section-title">
+          <h3>Risk Matrix</h3>
+          <p>Findings table grouped by severity, type, file, and line.</p>
+        </div>
+        <div class="results-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Severity</th>
+                <th>Risk</th>
+                <th>Type</th>
+                <th>File</th>
+                <th>Line</th>
+                <th>Trigger</th>
+                <th>Confidence</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <tr class="empty-row"><td colspan="8">Run an analysis to view findings.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="explain-card" id="explainPanel">
+          <h4>Explainability Panel</h4>
+          <p><strong>Why flagged:</strong> <span id="explainWhy">Select a finding row to inspect explanation.</span></p>
+          <p><strong>Trigger pattern:</strong> <span id="explainTrigger">-</span></p>
+          <p><strong>Matched tokens:</strong> <span id="explainTokens">-</span></p>
+          <p><strong>Reachability factor:</strong> <span id="explainReachability">-</span></p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="sampleItemTemplate">
+    <label class="sample-item">
+      <input type="checkbox" class="sample-checkbox">
+      <div>
+        <strong class="sample-name"></strong>
+        <small class="sample-meta"></small>
+        <pre class="sample-preview"></pre>
+      </div>
+    </label>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

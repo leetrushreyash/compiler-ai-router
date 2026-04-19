@@ -1,0 +1,6 @@
+{
+  "model_name": "randomforest",
+  "train_score": 0.9236111111111112,
+  "samples_trained": 144,
+  "features": 28
+}
