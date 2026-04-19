@@ -1,0 +1,6 @@
+{
+  "model_name": "svm",
+  "train_score": 0.75,
+  "samples_trained": 16,
+  "features": 28
+}
