@@ -27,16 +27,18 @@ Do not reply with conversational text or markdown blocks.
 The user may or may not provide code context. Always prioritize the 'User Prompt' to decide the target.
 
 TARGET A (Deep AI Analytics & Python):
-- Choose A if prompt mentions: "deep correlation analysis", "code smell correlation", "energy utilization", "neural symbolic", "carbon", or general "Python AI analysis".
+- Choose A if prompt mentions: "deep correlation analysis", "energy utilization", "neural symbolic", "carbon", or general "Python AI analysis".
 
-TARGET B (Refactoring & Autofixing):
-- Choose B if prompt mentions: "model selector", "auto-fixing", "refactoring", "fixing code", or general JavaScript/TS code without deep metrics.
+TARGET B (Refactoring & Code Smells for PYTHON ONLY):
+- Choose B if prompt mentions: "model selector", "auto-fixing", "refactoring", "fixing code", or general "code smells" for Python.
+- NEVER choose B if the prompt mentions C, C++, or other languages. Project B is strictly Python-only.
 
-TARGET C (C/C++ Security):
-- Choose C if prompt mentions: "C/C++", "security audits", "memory leak", "buffer overflow", "pointers", or "vulnerability".
+TARGET C (C/C++ Analysis & Security):
+- Choose C if prompt mentions: "C/C++", "C++ code smells", "security audits", "memory leak", "buffer overflow", "pointers", or "vulnerability".
+- ANY request involving C or C++ code must go to C.
 
 RETURN STRICTLY JSON IN THIS EXACT FORMAT:
-{"target": "A", "reason": "User asked for deep correlation analysis."}
+{"target": "C", "reason": "User asked for C++ code analysis."}
 """
     
     ollama_payload = {
