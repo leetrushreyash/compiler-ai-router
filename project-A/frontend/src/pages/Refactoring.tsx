@@ -37,8 +37,8 @@ export default function Refactoring({ report }: Props) {
             onClick={() => setSelected(i)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
               ${selected === i
-                ? 'border-brand-500 bg-brand-600/20 text-brand-400'
-                : 'border-gray-700 bg-surface-800 text-gray-400 hover:border-gray-500'}`}
+                ? 'border-brand-300 bg-brand-50 text-brand-700 shadow-sm'
+                 : 'border-gray-600 bg-surface-800 text-gray-400 hover:bg-gray-700 hover:text-gray-100 hover:border-gray-500'}`}
           >
             {ref.smell_type} · {ref.file.split(/[\\/]/).pop()}
           </button>
@@ -93,3 +93,4 @@ export default function Refactoring({ report }: Props) {
     </div>
   );
 }
+

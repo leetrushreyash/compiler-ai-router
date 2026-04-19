@@ -45,7 +45,7 @@ export default function Performance({ report }: Props) {
         <Timer size={22} className="text-cyan-400" /> Performance Timeline
       </h2>
       <p className="text-gray-400 text-sm mb-6">
-        Pipeline phase breakdown · Total wall time: <span className="text-white font-mono">{total.toFixed(3)}s</span>
+        Pipeline phase breakdown · Total wall time: <span className="text-gray-900 font-mono">{total.toFixed(3)}s</span>
       </p>
 
       {/* Visual timeline bar */}
@@ -63,12 +63,12 @@ export default function Performance({ report }: Props) {
                   title={`${phase.name}: ${phase.duration.toFixed(4)}s`}
                 >
                   {pct > 8 && (
-                    <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/90 truncate px-1">
+                    <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-900/90 truncate px-1">
                       {phase.name}
                     </span>
                   )}
                   {/* Tooltip on hover */}
-                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                  <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-700 text-gray-900 border border-gray-400 text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
                     {phase.name}: {phase.duration.toFixed(4)}s ({pct.toFixed(1)}%)
                   </div>
                 </div>
@@ -131,7 +131,7 @@ export default function Performance({ report }: Props) {
                   </td>
                   <td className="px-4 py-3 font-mono text-gray-400">{phase.start.toFixed(4)}s</td>
                   <td className="px-4 py-3 font-mono text-gray-400">{phase.end.toFixed(4)}s</td>
-                  <td className="px-4 py-3 font-mono text-white">{phase.duration.toFixed(4)}s</td>
+                  <td className="px-4 py-3 font-mono text-gray-900">{phase.duration.toFixed(4)}s</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
@@ -155,3 +155,4 @@ export default function Performance({ report }: Props) {
     </div>
   );
 }
+

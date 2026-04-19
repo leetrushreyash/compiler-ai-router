@@ -110,6 +110,7 @@ export interface EnergyReport {
   phases: Record<string, number>;
   energy_per_file: number;
   energy_per_smell: number;
+  smell_energy_breakdown?: { smell_type: string; file: string; energy_uj: number; energy_j: number }[];
 }
 
 export interface AnalysisReport {

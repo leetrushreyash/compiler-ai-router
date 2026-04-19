@@ -73,7 +73,7 @@ export default function CodeViewer({ report }: Props) {
         <Editor
           height="100%"
           language="python"
-          theme="vs-dark"
+          theme="light"
           value={currentCode}
           options={{
             readOnly: true,

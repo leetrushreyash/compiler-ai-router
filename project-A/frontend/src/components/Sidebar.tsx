@@ -48,9 +48,9 @@ export default function Sidebar({ hasReport }: Props) {
               onClick={(e: React.MouseEvent) => disabled && e.preventDefault()}
               className={({ isActive }: { isActive: boolean }) =>
                 `flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
-                ${disabled ? 'text-gray-600 cursor-not-allowed' : ''}
-                ${isActive && !disabled ? 'bg-brand-600/20 text-brand-500 font-medium' : ''}
-                ${!isActive && !disabled ? 'text-gray-300 hover:bg-gray-700/40 hover:text-white' : ''}`
+                ${disabled ? 'text-gray-400 cursor-not-allowed' : ''}
+                ${isActive && !disabled ? 'bg-brand-50 text-brand-700 font-medium border border-brand-200 shadow-sm' : ''}
+                ${!isActive && !disabled ? 'text-gray-600 hover:bg-gray-800 hover:text-gray-900 border border-transparent' : ''}`
               }
             >
               <Icon size={18} />

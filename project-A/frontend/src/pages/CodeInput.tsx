@@ -77,8 +77,8 @@ export default function CodeInput({ onReport }: Props) {
             onClick={() => setMode(key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${mode === key
-                ? 'bg-brand-600 text-white'
-                : 'bg-surface-800 text-gray-300 hover:bg-gray-700/60'}`}
+                ? 'bg-brand-50 text-brand-700 border border-brand-200 shadow-sm'
+                : 'bg-surface-800 text-gray-300 hover:bg-gray-700 hover:text-gray-100'}`}
           >
             <Icon size={16} />
             {label}
@@ -106,7 +106,7 @@ export default function CodeInput({ onReport }: Props) {
             accept=".py"
             multiple
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFiles(Array.from(e.target.files || []))}
-            className="block mx-auto text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-brand-600 file:text-white file:cursor-pointer"
+            className="block mx-auto text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-700 file:text-gray-100 file:cursor-pointer hover:file:bg-gray-600"
           />
           {files.length > 0 && (
             <p className="mt-3 text-sm text-brand-500">{files.length} file(s) selected</p>
@@ -125,8 +125,8 @@ export default function CodeInput({ onReport }: Props) {
                 onClick={() => toggleExample(ex.name)}
                 className={`p-3 rounded-xl border text-sm text-left transition-colors
                   ${sel
-                    ? 'border-brand-500 bg-brand-600/20 text-brand-400'
-                    : 'border-gray-700 bg-surface-800 text-gray-300 hover:border-gray-500'}`}
+                    ? 'border-brand-300 bg-brand-50 text-brand-700 shadow-sm'
+                    : 'border-gray-600 bg-surface-800 text-gray-300 hover:border-gray-400 hover:bg-gray-700 hover:text-gray-100'}`}
               >
                 <FileCode size={16} className="mb-1" />
                 {ex.name}
@@ -146,7 +146,7 @@ export default function CodeInput({ onReport }: Props) {
       <button
         onClick={handleAnalyze}
         disabled={loading}
-        className="mt-6 flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-semibold transition-colors"
+        className="mt-6 flex items-center gap-2 px-6 py-3 rounded-xl bg-gray-600 hover:bg-gray-400 disabled:opacity-50 text-gray-100 border border-gray-400 font-semibold transition-colors"
       >
         <Play size={18} />
         {loading ? 'Analyzing…' : 'Run Analysis'}

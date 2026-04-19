@@ -230,13 +230,21 @@ export default function Correlations({ report }: Props) {
 
       {/* ── 3. Correlation vs Co-occurrence Scatter ─────────────────── */}
       {scatterData.length > 0 && (
-        <section className="bg-surface-800 border border-gray-700/50 rounded-xl p-5 mb-8">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp size={18} className="text-yellow-400" /> Correlation vs Co-occurrence
+        <section className="bg-surface-800 border border-gray-400 shadow-sm rounded-xl p-5 mb-8">
+          <h3 className="text-lg font-semibold mb-2 flex items-center gap-2 text-gray-100">
+            <TrendingUp size={18} className="text-brand-500" /> Correlation vs Co-occurrence Analysis
           </h3>
-          <p className="text-xs text-gray-400 mb-3">
-            Each bubble is a smell pair. X = correlation, Y = co-occurrences, size = interaction weight.
-          </p>
+          <div className="bg-brand-50 border border-brand-200 rounded-lg p-4 mb-4">
+            <h4 className="text-sm font-bold text-brand-800 mb-1">What does this chart mean?</h4>
+            <p className="text-sm text-gray-300 leading-relaxed mb-2">
+              This chart visualizes the relationship between how often two code smells happen to appear in the same file (<span className="font-semibold text-gray-100">Co-occurrences</span>, Y-axis) vs whether they actually have a mathematical statistical relationship (<span className="font-semibold text-gray-100">Correlation</span>, X-axis).
+            </p>
+            <ul className="text-xs text-gray-300 list-disc pl-5 space-y-1">
+              <li><strong className="text-gray-100">Top-Right (Danger Zone):</strong> Smells that happen heavily together AND are statistically linked. Fixing one might fix the other.</li>
+              <li><strong className="text-gray-100">Top-Left:</strong> Smells that appear in the same files often by pure coincidence, but don't mathematically drive each other.</li>
+              <li><strong className="text-gray-100">Bubble Size:</strong> The overall priority/weight of the interaction. Larger bubbles represent highly toxic pairings.</li>
+            </ul>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <ScatterChart margin={{ left: 10, right: 20, top: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -276,16 +284,19 @@ export default function Correlations({ report }: Props) {
       )}
 
       {/* ── 4. Correlation Distribution Histogram ──────────────────── */}
-      <section className="bg-surface-800 border border-gray-700/50 rounded-xl p-5 mb-8">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <BarChart3 size={18} className="text-emerald-400" /> Correlation Distribution
+      <section className="bg-surface-800 border border-gray-400 shadow-sm rounded-xl p-5 mb-8">
+        <h3 className="text-lg font-semibold mb-2 flex items-center gap-2 text-gray-100">
+          <BarChart3 size={18} className="text-brand-500" /> Correlation Distribution
         </h3>
-        <p className="text-xs text-gray-400 mb-3">
-          Histogram of all pairwise correlation values across smell types.
+        <p className="text-sm text-gray-200 mb-4 bg-brand-50 border border-brand-200 p-3 rounded-lg leading-relaxed">
+          <strong className="text-gray-100 tracking-wide uppercase text-xs block mb-1">What am I looking at?</strong>
+          This area chart shows a summary of ALL code smell pairs and how strongly they are connected mathematically. 
+          Are most pairs completely unrelated (bulge in the middle near 0)? Or are there massive clusters of smells that always drag each other down (bulge on the right near 0.8–1.0)? 
+          A bulge near 1.0 means your codebase suffers strictly from cascading code smell "chain reactions."
         </p>
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart data={corrHistData} margin={{ left: 10, right: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="range" tick={{ fill: '#9ca3af', fontSize: 11 }} />
             <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
             <Tooltip content={<DarkTooltip />} />

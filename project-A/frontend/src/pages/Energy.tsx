@@ -38,12 +38,31 @@ export default function Energy({ report }: Props) {
 
   // Energy per smell type (estimated proportionally)
   const smellCounts = useMemo(() => {
-    const map: Record<string, number> = {};
-    report.findings.forEach((f) => { map[f.smell_type] = (map[f.smell_type] || 0) + 1; });
-    return Object.entries(map).map(([type, count]) => ({
+    const map: Record<string, { count: number, energy: number }> = {};
+    
+    // If the backend provided the specific energy distribution per smell:
+    if (e.smell_energy_breakdown) {
+      e.smell_energy_breakdown.forEach((item) => {
+        if (!map[item.smell_type]) map[item.smell_type] = { count: 0, energy: 0 };
+        map[item.smell_type].count += 1;
+        map[item.smell_type].energy += item.energy_j;
+      });
+      return Object.entries(map).map(([type, stats]) => ({
+        type,
+        count: stats.count,
+        energy: +(stats.energy.toFixed(6))
+      }));
+    }
+
+    // Fallback if older backend version
+    report.findings.forEach((f) => { 
+      if (!map[f.smell_type]) map[f.smell_type] = { count: 0, energy: 0 };
+      map[f.smell_type].count += 1;
+    });
+    return Object.entries(map).map(([type, stats]) => ({
       type,
-      count,
-      energy: +((e.estimated_energy_joules / Math.max(report.findings.length, 1)) * count).toFixed(6),
+      count: stats.count,
+      energy: +((e.estimated_energy_joules / Math.max(report.findings.length, 1)) * stats.count).toFixed(6),
     }));
   }, [report.findings, e]);
 

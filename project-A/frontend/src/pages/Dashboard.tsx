@@ -205,36 +205,68 @@ export default function Dashboard({ report }: Props) {
         )}
       </div>
 
-      {/* SHAP Explanations */}
+      {/* Explainable AI / SHAP Explanations */}
       {report.ml_explanations && report.ml_explanations.length > 0 && (
-        <section className="mt-8">
-          <h3 className="text-lg font-semibold mb-3">SHAP Explanations</h3>
-          <div className="space-y-3">
-            {report.ml_explanations.map((ex, i) => (
-              <div key={i} className="bg-surface-800 border border-gray-700/50 rounded-xl p-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="font-mono text-brand-400">{ex.smell_type}</span>
-                  <span className="text-xs text-gray-400">
-                    prob={ex.probability.toFixed(2)} · {ex.prediction_source}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {ex.shap_explanation.slice(0, 5).map((s, j) => (
-                    <span
-                      key={j}
-                      className={`text-xs px-2 py-1 rounded-full border ${
-                        s.shap_value > 0
-                          ? 'border-red-500/40 text-red-400 bg-red-500/10'
-                          : 'border-green-500/40 text-green-400 bg-green-500/10'
-                      }`}
-                    >
-                      {s.feature}: {s.shap_value > 0 ? '+' : ''}{s.shap_value.toFixed(4)}
+        <section className="mt-10 mb-8 border-t border-gray-400 pt-8">
+          <h3 className="text-xl font-bold mb-1 text-gray-100 flex items-center gap-2">
+            <Info className="text-brand-500" />
+            AI Reasoning Details
+          </h3>
+          <p className="text-sm text-gray-300 mb-6">
+            Our ML model explicitly explains which code features influenced its decision to flag this smell.
+          </p>
+          <div className="space-y-4">
+            {report.ml_explanations.map((ex, i) => {
+              const formatFeature = (f: string) => f.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+              
+              return (
+                <div key={i} className="bg-surface-800 border border-gray-400 shadow-sm rounded-xl p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-gray-300 pb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono bg-brand-50 text-brand-800 px-3 py-1 rounded-lg text-sm border border-brand-300 font-bold shadow-sm">
+                        {ex.smell_type}
+                      </span>
+                      <span className="text-sm text-gray-700 font-semibold bg-gray-200 px-3 py-1 rounded-lg border border-gray-400 shadow-sm">
+                        Confidence: {(ex.probability * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                    <span className="text-xs bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-semibold border border-gray-400 uppercase tracking-wide">
+                      Source: {ex.prediction_source === 'ml' ? 'Machine Learning' : ex.prediction_source}
                     </span>
-                  ))}
+                  </div>
+                  
+                  <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider mb-3">
+                    Key Factors Impacting this Decision
+                  </h4>
+                  <div className="flex flex-col gap-2 mb-5">
+                    {ex.shap_explanation.slice(0, 5).map((s, j) => {
+                      const impact = (Math.abs(s.shap_value) * 100).toFixed(1);
+                      const isPositive = s.shap_value > 0;
+                      
+                      return (
+                        <div key={j} className="flex flex-col sm:flex-row sm:items-center justify-between border border-gray-400 bg-surface-800 rounded-lg px-4 py-2 gap-2">
+                          <span className="text-sm text-gray-100 font-medium">{formatFeature(s.feature)}</span>
+                          <span className={"text-xs font-bold px-2 py-1 rounded-md border " + (
+                            isPositive
+                              ? "text-red-700 bg-red-100 border-red-300"
+                              : "text-green-700 bg-green-100 border-green-300"
+                          )}>
+                            {isPositive ? 'Increased' : 'Decreased'} likelihood by {impact}%
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="bg-brand-50 rounded-lg p-4 border border-brand-200 flex gap-3 items-start">
+                    <Info className="text-brand-500 mt-0.5 flex-shrink-0" size={18} />
+                    <p className="text-sm text-brand-900 leading-relaxed font-medium">
+                      {ex.explanation_text}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-400 mt-2">{ex.explanation_text}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
