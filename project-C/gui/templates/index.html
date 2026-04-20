@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compiler Engine - Static Analyzer</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
     <style>
         :root {
             --bg-light: #f8fafc;
@@ -40,7 +44,7 @@
             margin: 0;
             font-size: 2.5rem;
             color: var(--text-dark);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         p.subtitle {
@@ -50,7 +54,15 @@
 
         .container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .top-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
             gap: 2rem;
             width: 100%;
             max-width: 1200px;
@@ -60,8 +72,10 @@
             background: var(--panel-bg);
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border: 1px solid var(--border-light);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .panel h2 {
@@ -73,24 +87,61 @@
             color: var(--text-dark);
         }
 
-        textarea {
+        .CodeMirror {
             width: 100%;
             height: 300px;
             background: #f1f5f9;
             color: #1e293b;
             border: 1px solid var(--border-light);
             border-radius: 8px;
-            padding: 1rem;
             font-family: 'Courier New', Courier, monospace;
-            resize: vertical;
-            box-sizing: border-box;
             font-size: 0.95rem;
         }
 
-        textarea:focus {
-            outline: none;
+        .CodeMirror-focused {
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        .highlight-error {
+            background-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .highlight-warn {
+            background-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .file-list-container {
+            display: none;
+            margin-bottom: 1rem;
+            max-height: 120px;
+            overflow-y: auto;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            background: #f8fafc;
+        }
+
+        .file-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-item:hover {
+            background: #e2e8f0;
+        }
+
+        .file-item.active {
+            background: #e0e7ff;
+            font-weight: bold;
+            color: var(--accent);
         }
 
         .actions {
@@ -111,10 +162,18 @@
             transition: background 0.2s, transform 0.1s;
         }
 
-        button.primary:hover { background: #2563eb; }
-        button.primary:active { transform: scale(0.98); }
+        button.primary:hover {
+            background: #2563eb;
+        }
 
-        #file-upload { display: none; }
+        button.primary:active {
+            transform: scale(0.98);
+        }
+
+        #file-upload {
+            display: none;
+        }
+
         .upload-btn {
             background: transparent;
             color: var(--text-muted);
@@ -124,7 +183,12 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .upload-btn:hover { color: var(--text-dark); border-color: var(--text-dark); background: #f1f5f9; }
+
+        .upload-btn:hover {
+            color: var(--text-dark);
+            border-color: var(--text-dark);
+            background: #f1f5f9;
+        }
 
         /* Results Panel */
         .results-hidden {
@@ -137,42 +201,142 @@
             text-align: center;
             font-weight: 800;
             font-size: 1.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             border: 2px solid;
-            background: rgba(255,255,255,0.5);
+            background: rgba(255, 255, 255, 0.5);
         }
 
-        .verdict-clean { color: var(--success); border-color: var(--success); background-color: rgba(16, 185, 129, 0.1) !important; }
-        .verdict-smelly { color: var(--danger); border-color: var(--danger); background-color: rgba(239, 68, 68, 0.1) !important; }
-
-        .chart-container {
-            width: 100%;
-            height: 300px;
-            position: relative;
+        .verdict-clean {
+            color: var(--success);
+            border-color: var(--success);
+            background-color: rgba(16, 185, 129, 0.1) !important;
         }
 
-        .smell-tags {
-            margin-top: 1rem;
+        .verdict-smelly {
+            color: var(--danger);
+            border-color: var(--danger);
+            background-color: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* QUICK NAV PANEL */
+        .quick-nav {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.5rem;
         }
 
-        .tag {
-            background: rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
+        .nav-button {
+            background: #f1f5f9;
+            border: 1px solid var(--border-light);
+            padding: 0.9rem 1.2rem;
+            font-size: 0.95rem;
             font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            position: relative;
+            text-align: left;
+            width: 100%;
         }
 
-        @media (max-width: 900px) {
-            .container { grid-template-columns: 1fr; }
+        .nav-button:hover {
+            background: #e2e8f0;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .nav-button.alert-smell::after {
+            content: "⚠ Issues";
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: var(--warning);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            animation: pulse-warn 2s infinite;
+        }
+
+        .nav-button.alert-security::after {
+            content: "🚨 Critical";
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            animation: pulse-danger 2s infinite;
+        }
+
+        @keyframes pulse-warn {
+            0% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+            }
+        }
+
+        @keyframes pulse-danger {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .scroll-section {
+            border-top: 2px dashed var(--border-light);
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+            scroll-margin-top: 20px;
+            /* offset for smooth scrolling */
+        }
+
+        .scroll-section:first-of-type {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .func-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            box-sizing: border-box;
         }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -180,95 +344,291 @@
         <p class="subtitle">Extract metrics from C++ code and evaluate DSL Code Smells</p>
     </header>
 
-    <div class="container">
+    <!-- TOP ROW: Code input left, Nav buttons right -->
+    <div class="top-row">
         <!-- Input Panel -->
         <div class="panel">
             <h2>Source Code Input</h2>
-            <textarea id="code-input" placeholder="Paste your C++ code here..."></textarea>
             
+            <div id="file-list" class="file-list-container"></div>
+            
+            <textarea id="code-input" placeholder="Paste your C++ code here..."></textarea>
+
             <div class="actions">
-                <label for="file-upload" class="upload-btn">Upload .cpp File</label>
-                <input type="file" id="file-upload" accept=".cpp,.h,.c">
-                <button class="primary" onclick="analyzeCode()">Analyze Extracted Metrics</button>
+                <label for="file-upload" class="upload-btn">Upload Files</label>
+                <input type="file" id="file-upload" accept=".cpp,.h,.c" multiple>
+
+                <label for="folder-upload" class="upload-btn" style="margin-left: 10px;">Upload Directory</label>
+                <input type="file" id="folder-upload" accept=".cpp,.h,.c" webkitdirectory directory>
+
+                <button class="primary" style="margin-left:auto;" onclick="analyzeCode()">Analyze Extracted Metrics</button>
             </div>
         </div>
 
-        <!-- Output Panel -->
+        <!-- Right Nav Panel -->
+        <div class="panel" style="display:flex; flex-direction:column; justify-content:center;">
+            <h2>Quick Navigation</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0;">After analysis, click to jump directly
+                to each section below.</p>
+            <div class="quick-nav" id="result-tabs" style="padding:0;">
+                <button class="nav-button" onclick="scrollToSection('section-smells')" id="btn-tab-smells">📊 Code
+                    Smells Info</button>
+                <button class="nav-button" onclick="scrollToSection('section-security')" id="btn-tab-security">🔐
+                    Security Issues</button>
+                <button class="nav-button" onclick="scrollToSection('section-graphs')" id="btn-tab-graphs">📈 Graph
+                    Analysis</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULTS BELOW -->
+    <div class="container">
         <div class="panel" id="output-panel">
-            <h2>Analysis Results</h2>
-            <div id="loading" style="display: none; text-align: center; color: var(--accent);">Analyzing parsing phases...</div>
-            
+            <div id="loading" style="display: none; text-align: center; color: var(--accent);">Analyzing parsing
+                phases...</div>
+
             <div id="results-content" class="results-hidden">
                 <div id="final-verdict" class="verdict-clean">
                     RESULT: CLEAN CODE
                 </div>
 
-                <div class="smell-tags" id="smell-tags-container">
-                    <!-- Tags injected here -->
+                <!-- Section: Code Smells Info -->
+                <div id="section-smells" class="scroll-section">
+                    <div class="section-title">📊 Code Smells Info</div>
+                    <div id="smell-tags-container"></div>
                 </div>
 
-                <h3 style="margin-top: 1.5rem; font-size: 1rem; color: var(--text-muted);">Extracted Metrics</h3>
-                <div class="chart-container">
-                    <canvas id="metricsChart"></canvas>
+                <!-- Section: Security Issues -->
+                <div id="section-security" class="scroll-section">
+                    <div class="section-title">🔐 Security Issues</div>
+                    <div id="security-issues-container"></div>
+                </div>
+
+                <!-- Section: Graph Analysis -->
+                <div id="section-graphs" class="scroll-section">
+                    <div class="section-title">📈 Graph Analysis</div>
+                    <div id="metrics-dashboard" style="display:none; width:100%;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                            <!-- Chart 1: Stacked Horizontal Bar -->
+                            <div class="panel" style="box-shadow:none;">
+                                <h2>1 · Metric Composition per Function</h2>
+                                <div style="position:relative;height:280px;"><canvas id="stackedBarChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Bubble -->
+                            <div class="panel" style="box-shadow:none;">
+                                <h2>2 · Complexity Map (Bubble)</h2>
+                                <div style="position:relative;height:280px;"><canvas id="bubbleChart"></canvas></div>
+                            </div>
+
+                            <!-- Chart 3: Doughnut -->
+                            <div class="panel" style="box-shadow:none;">
+                                <h2>3 · Codebase Health Score</h2>
+                                <div style="position:relative;height:280px;"><canvas id="doughnutChart"></canvas></div>
+                            </div>
+
+                            <!-- Chart 4: Waterfall / Ranked Bar -->
+                            <div class="panel" style="box-shadow:none;">
+                                <h2>4 · Risk Severity Ranking</h2>
+                                <div style="position:relative;height:280px;"><canvas id="waterfallChart"></canvas></div>
+                            </div>
+
+                            <!-- Chart 5: Line Trend -->
+                            <div class="panel" style="box-shadow:none;">
+                                <h2>5 · Complexity Trend Across File</h2>
+                                <div style="position:relative;height:240px;"><canvas id="lineChart"></canvas></div>
+                            </div>
+
+                            <!-- Chart 6: Security Violation Breakdown (NEW) -->
+                            <div class="panel" style="box-shadow:none;">
+                                <h2>6 · Security Violation Frequency</h2>
+                                <div style="position:relative;height:240px;"><canvas id="violationChart"></canvas></div>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let radarChart = null;
+        // Smooth scroll system logic
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
 
-        // Handle File Upload
-        document.getElementById('file-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            // Update label to show file name
-            const label = document.querySelector('.upload-btn');
-            label.textContent = 'File: ' + file.name;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('code-input').value = e.target.result;
-            };
-            reader.readAsText(file);
+        let uploadedFiles = [];
+        let currentFileIndex = -1;
+
+        // Initialize CodeMirror
+        const editor = CodeMirror.fromTextArea(document.getElementById('code-input'), {
+            lineNumbers: true,
+            mode: "text/x-c++src",
+            theme: "default"
         });
 
-        async function analyzeCode() {
-            const code = document.getElementById('code-input').value;
-            if (!code.trim()) {
-                alert("Please drop some C++ code first!");
+        // Shared handler for Files or Folder array uploads
+        async function handleFileSelection(files, labelSelector) {
+            if (!files.length) return;
+
+            uploadedFiles = [];
+            const label = document.querySelector(labelSelector);
+            const originalText = label.textContent;
+            label.textContent = files.length > 1 ? `${files.length} Files Selected` : files[0].name;
+
+            for (let f of files) {
+                // Filter specifically for C++
+                if (!f.name.match(/\.(cpp|c|h|hpp)$/i)) continue;
+                // FileReader as a promise
+                const text = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => resolve(evt.target.result);
+                    reader.readAsText(f);
+                });
+                
+                uploadedFiles.push({
+                    name: f.webkitRelativePath || f.name,
+                    code: text,
+                    ast_results: null // populated post-analysis
+                });
+            }
+
+            // Restore the original label text after 3 seconds for usability
+            setTimeout(() => { label.textContent = originalText; }, 3000);
+
+            if (uploadedFiles.length > 0) {
+                switchFile(0);
+                renderFileList();
+            } else {
+                alert("No valid C/C++ files found in selection.");
+            }
+        }
+
+        // Event listeners for دونوں buttons
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            handleFileSelection(e.target.files, 'label[for="file-upload"]');
+        });
+        
+        document.getElementById('folder-upload').addEventListener('change', function(e) {
+            handleFileSelection(e.target.files, 'label[for="folder-upload"]');
+        });
+
+        function renderFileList() {
+            const container = document.getElementById('file-list');
+            container.innerHTML = '';
+            
+            if (uploadedFiles.length <= 1) {
+                container.style.display = 'none';
                 return;
+            }
+            
+            container.style.display = 'block';
+            uploadedFiles.forEach((f, idx) => {
+                const item = document.createElement('div');
+                item.className = 'file-item' + (idx === currentFileIndex ? ' active' : '');
+                
+                const riskCount = f.ast_results ? f.ast_results.functions.reduce((acc, fn) => acc + (fn.security.has_vulnerabilities ? 1 : 0), 0) : 0;
+                let badge = '';
+                if(riskCount > 0) {
+                    badge = `<span style="color:#ef4444; font-weight:bold;">[!]</span>`;
+                }
+
+                item.innerHTML = `<span>${f.name}</span> ${badge}`;
+                item.onclick = () => switchFile(idx);
+                container.appendChild(item);
+            });
+        }
+
+        function switchFile(idx) {
+            currentFileIndex = idx;
+            const fileObj = uploadedFiles[idx];
+            editor.setValue(fileObj.code);
+            renderFileList();
+            
+            // Clear highlights
+            editor.getAllMarks().forEach(m => m.clear());
+            
+            // Reapply highlights if analyzed
+            if (fileObj.ast_results) {
+                highlightIssuesInEditor(fileObj.ast_results);
+            }
+        }
+
+        function highlightIssuesInEditor(ast_results) {
+            ast_results.functions.forEach(func => {
+                // Highlight smells
+                if (func.code_smell && func.code_smell.is_smelly && func.line !== undefined) {
+                    editor.addLineClass(func.line, 'background', 'highlight-warn');
+                }
+                // Highlight security vulnerabilities
+                if (func.security && func.security.issues) {
+                    func.security.issues.forEach(issue => {
+                        if (issue.line !== undefined) {
+                            editor.addLineClass(issue.line, 'background', 'highlight-error');
+                        }
+                    });
+                }
+            });
+        }
+
+        async function analyzeCode() {
+            // First update any active paste changes in the editor back to the payload
+            if (uploadedFiles.length === 0) {
+                const manualCode = editor.getValue();
+                if (!manualCode.trim()) {
+                    alert("Please drop some C++ code first!");
+                    return;
+                }
+                uploadedFiles.push({ name: 'main.cpp', code: manualCode, ast_results: null });
+                currentFileIndex = 0;
+            } else if (currentFileIndex >= 0) {
+                // Synchronize whatever they typed back
+                uploadedFiles[currentFileIndex].code = editor.getValue();
             }
 
             document.getElementById('loading').style.display = 'block';
             document.getElementById('results-content').classList.add('results-hidden');
 
+            // Clean alerts
+            document.getElementById('btn-tab-smells').classList.remove('alert-smell');
+            document.getElementById('btn-tab-security').classList.remove('alert-security');
+
             try {
+                // Create Payload
+                const payload = uploadedFiles.map(f => ({filename: f.name, code: f.code}));
+
                 const response = await fetch('/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: code })
+                    body: JSON.stringify({ batch: payload })
                 });
-                
-                const text = await response.text();
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch(e) {
-                    console.error("Backend sent non-JSON HTML error:", text.substring(0, 500));
-                    alert("Backend crashed! Check the browser console. Received: " + text.substring(0, 50));
-                    return;
-                }
-                
+
+                const data = await response.json();
+
                 if (data.error) {
                     alert("Error: " + data.error);
                 } else {
+                    // Reverse map results back to `uploadedFiles` for UI highlighting
+                    if (data.batch_results) {
+                        data.batch_results.forEach(res => {
+                            const uf = uploadedFiles.find(f => f.name === res.filename);
+                            if(uf) uf.ast_results = res.ast_results;
+                        });
+                    }
+                    
+                    // Trigger highlighting for the current file
+                    switchFile(currentFileIndex);
+                    
                     renderResults(data);
                 }
             } catch (err) {
                 console.error(err);
-                alert("Network Error: " + err.message);
+                alert("Server error. Is the Flask app running?");
             } finally {
                 document.getElementById('loading').style.display = 'none';
             }
@@ -276,78 +636,280 @@
 
         function renderResults(data) {
             document.getElementById('results-content').classList.remove('results-hidden');
-            
+
+            let hasSecurityAlert = false;
+            let hasSmellAlert = false;
+
             // Global Verdict
             const verdictEl = document.getElementById('final-verdict');
             if (data.is_smelly) {
-                verdictEl.textContent = "WARNING: HIGH SEVERITY ISSUES DETECTED";
+                verdictEl.textContent = "WARNING: ISSUES DETECTED ACROSS BATCH";
                 verdictEl.className = "verdict-smelly";
             } else {
                 verdictEl.textContent = "CLEAN CODE (All Clear)";
                 verdictEl.className = "verdict-clean";
             }
 
-            // Function Cards Container
-            const tagsContainer = document.getElementById('smell-tags-container');
-            tagsContainer.innerHTML = '';
-            
-            if (!data.ast_results || !data.ast_results.functions || data.ast_results.functions.length === 0) {
-                tagsContainer.innerHTML = '<p style="color:var(--text-muted)">No functions detected in code.</p>';
+            const smellsContainer = document.getElementById('smell-tags-container');
+            const securityContainer = document.getElementById('security-issues-container');
+            smellsContainer.innerHTML = '';
+            securityContainer.innerHTML = '';
+
+            if (!data.batch_results || data.batch_results.length === 0) {
+                smellsContainer.innerHTML = '<p style="color:var(--text-muted)">No files analyzed.</p>';
+                securityContainer.innerHTML = '<p style="color:var(--text-muted)">No files analyzed.</p>';
                 return;
             }
 
-            // Build beautifully customized function cards natively analyzing API payloads
-            data.ast_results.functions.forEach(func => {
-                const card = document.createElement('div');
-                card.style.background = "#ffffff";
-                card.style.border = "1px solid #e2e8f0";
-                card.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05)";
-                card.style.borderRadius = "8px";
-                card.style.padding = "1rem";
-                card.style.marginTop = "1rem";
-                card.style.width = "100%";
-                card.style.boxSizing = "border-box";
-                
-                let smellTag = '';
-                if (func.code_smell) {
-                    smellTag = func.code_smell.is_smelly ? `<span style="color:#ef4444; font-weight:bold;">[ML SMELL DETECTED] (${func.code_smell.classification})</span>` : `<span style="color:#10b981; font-weight:bold;">[No Smell Detected]</span>`;
-                } else {
-                    let severityColor = func.overall_severity === 'High' || func.overall_severity === 'Critical' ? '#ef4444' : '#10b981';
-                    smellTag = `<span style="color:${severityColor}; font-weight:bold;">[Security Severity: ${func.overall_severity || 'None'}]</span>`;
-                }
-                
-                let securityHTML = '';
-                if (func.security.has_vulnerabilities) {
-                    securityHTML = `<div style="margin-top:0.8rem; background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid #ef4444; padding: 0.8rem; border-radius: 4px;">
-                        <strong style="color: #b91c1c;">⚠ SECURITY VULNERABILITIES FOUND:</strong><ul style="margin: 0.5rem 0 0 0; color: #991b1b;">`;
-                    func.security.issues.forEach(issue => {
-                        let lineStr = issue.line ? ` <span style="color:#ef4444; font-size:0.85em;">(Line ${issue.line})</span>` : '';
-                        securityHTML += `<li style="margin-bottom: 0.3rem;">${issue.message}${lineStr}</li>`;
-                    });
-                    securityHTML += `</ul></div>`;
-                }
+            // Build function cards
+            let securityCardCount = 0;
 
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
-                        <strong style="color:#4f46e5; font-size:1.1rem; font-family:monospace;">${func.name}()</strong>
-                        <span style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 0.2rem 0.6rem; border-radius: 12px; font-size:0.8rem; font-weight:bold;">Severity: ${func.overall_severity}</span>
-                    </div>
-                    <div style="margin-bottom: 0.5rem;">${smellTag} <span style="color:#64748b; font-size:0.9rem;">(Confidence: ${func.code_smell ? func.code_smell.probability_score : 100}%)</span></div>
-                    <div style="display:flex; gap: 1rem; color: #64748b; font-size:0.9rem; font-weight: 500;">
-                        <span>Nodes: ${func.ast_metrics ? func.ast_metrics.total_ast_nodes : (func.code_smell ? func.code_smell.metrics.total_ast_nodes : 0)}</span>
-                        <span>Depth: ${func.ast_metrics ? func.ast_metrics.max_depth : (func.code_smell ? func.code_smell.metrics.max_depth : 0)}</span>
-                        <span>Loops: ${func.ast_metrics ? func.ast_metrics.loop_count : (func.code_smell ? func.code_smell.metrics.loop_count : 0)}</span>
-                        <span>Ifs: ${func.ast_metrics ? func.ast_metrics.if_count : (func.code_smell ? func.code_smell.metrics.if_count : 0)}</span>
-                    </div>
-                    ${securityHTML}
-                `;
-                tagsContainer.appendChild(card);
+            const allFuncs = [];
+            data.batch_results.forEach(fileResult => {
+                const fname = fileResult.filename;
+                const astRes = fileResult.ast_results;
+                if (!astRes || !astRes.functions) return;
+                
+                astRes.functions.forEach(f => {
+                    f._filename = fname; // Tag with filename
+                    allFuncs.push(f);
+                });
             });
 
-            // (Chart is disabled in this phase since function cards provide deeper value)
-            const canvasContainer = document.querySelector('.chart-container');
-            if (canvasContainer) { canvasContainer.style.display = 'none'; }
+            allFuncs.forEach(func => {
+                const cc = func.ast_metrics.cyclomatic_complexity || 1;
+
+                // Track alerts 
+                if (cc >= 5) hasSmellAlert = true;
+                if (func.security.has_vulnerabilities) hasSecurityAlert = true;
+
+                // Build Smells Card
+                const smellCard = document.createElement('div');
+                smellCard.className = "func-card";
+
+                let smellBadge = '';
+                if (func.code_smell.is_smelly) {
+                    let badgeColor = '#b45309'; // Default warning orange
+                    let badgeBG = '#fef3c7';
+
+                    if (func.code_smell.classification === "Long Parameter List") {
+                        badgeColor = '#7c3aed'; // Purple for parameter issues
+                        badgeBG = '#f5f3ff';
+                    }
+
+                    smellBadge = `<span style="background:${badgeBG};color:${badgeColor};padding:2px 8px;border-radius:12px;font-size:0.8rem;font-weight:bold;">${func.code_smell.classification}</span>`;
+                } else {
+                    smellBadge = `<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:12px;font-size:0.8rem;font-weight:bold;">Clean</span>`;
+                }
+
+                smellCard.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #e2e8f0;padding-bottom:0.5rem;margin-bottom:0.5rem;">
+                        <strong style="color:#4f46e5;font-size:1.1rem;font-family:monospace;">${func.name}() <span style="font-size:0.8rem;color:#64748b;">(${func._filename})</span></strong>
+                        ${smellBadge}
+                    </div>
+                    <div style="display:flex;gap:1.5rem;color:#64748b;font-size:0.95rem;font-weight:500;">
+                        <span>Nodes: <strong>${func.ast_metrics.total_ast_nodes}</strong></span>
+                        <span>Depth: <strong>${func.ast_metrics.max_depth}</strong></span>
+                        <span>Params: <strong style="color:${func.ast_metrics.param_count > 5 ? '#7c3aed' : '#64748b'}">${func.ast_metrics.param_count || 0}</strong></span>
+                        <span>CC: <strong style="color:${cc >= 5 ? '#f59e0b' : '#10b981'}">${cc}</strong></span>
+                    </div>`;
+                smellsContainer.appendChild(smellCard);
+
+                // Build Security Card (Only if has vulnerabilities)
+                if (func.security.has_vulnerabilities) {
+                    securityCardCount++;
+                    const secCard = document.createElement('div');
+                    secCard.className = "func-card";
+
+                    let securityHTML = `<div style="margin-top:0.5rem;background:#fef2f2;border:1px solid #fecaca;border-left:4px solid #ef4444;padding:0.8rem;border-radius:4px;">
+                        <ul style="margin:0;color:#991b1b;padding-left:1.2rem;">`;
+                    func.security.issues.forEach(issue => {
+                        const lineStr = issue.line ? ` <span style="color:#ef4444;font-size:0.85em;">(Line ${issue.line})</span>` : '';
+                        securityHTML += `<li style="margin-bottom:0.3rem;"><strong>${issue.message}</strong>${lineStr}</li>`;
+                    });
+                    securityHTML += `</ul></div>`;
+
+                    secCard.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #e2e8f0;padding-bottom:0.5rem;margin-bottom:0.5rem;">
+                            <strong style="color:#b91c1c;font-size:1.1rem;font-family:monospace;">${func.name}() <span style="font-size:0.8rem;color:#991b1b;">(${func._filename})</span></strong>
+                            <span style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;padding:0.2rem 0.6rem;border-radius:12px;font-size:0.8rem;font-weight:bold;">Severity: ${func.overall_severity}</span>
+                        </div>
+                        ${securityHTML}
+                    `;
+                    securityContainer.appendChild(secCard);
+                }
+            });
+
+            if (securityCardCount === 0) {
+                securityContainer.innerHTML = '<div style="padding:2rem;text-align:center;color:#10b981;font-weight:bold;background:#ecfdf5;border-radius:8px;border:1px solid #a7f3d0;">No security vulnerabilities found! 🎉</div>';
+            }
+
+            // Apply Alerts to Nav Buttons
+            if (hasSmellAlert) document.getElementById('btn-tab-smells').classList.add('alert-smell');
+            if (hasSecurityAlert) document.getElementById('btn-tab-security').classList.add('alert-security');
+
+            renderAllCharts(allFuncs);
+
+            // Auto scroll down just to top of results to show they appeared
+            document.getElementById('output-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ── Chart registry (destroy before re-render) ────────────────
+        const _charts = {};
+        function mkChart(id, config) {
+            if (_charts[id]) _charts[id].destroy();
+            _charts[id] = new Chart(document.getElementById(id).getContext('2d'), config);
+        }
+
+        function renderAllCharts(funcs) {
+            document.getElementById('metrics-dashboard').style.display = 'block';
+
+            const names = funcs.map(f => f.name);
+            const cc = funcs.map(f => f.ast_metrics.cyclomatic_complexity || 1);
+            const depth = funcs.map(f => f.ast_metrics.max_depth || 0);
+            const nodes = funcs.map(f => f.ast_metrics.total_ast_nodes || 0);
+            const ifs = funcs.map(f => f.ast_metrics.if_count || 0);
+            const loops = funcs.map(f => f.ast_metrics.loop_count || 0);
+            const others = funcs.map((f, i) => Math.max(0, nodes[i] - ifs[i] - loops[i]));
+            const vuln = funcs.filter(f => f.security.has_vulnerabilities).length;
+            const highCC = funcs.filter(f => (f.ast_metrics.cyclomatic_complexity || 1) > 5).length;
+            const clean = funcs.length - vuln - highCC;
+
+            mkChart('stackedBarChart', {
+                type: 'bar',
+                data: {
+                    labels: names,
+                    datasets: [
+                        { label: 'If-nodes', data: ifs, backgroundColor: 'rgba(245,158,11,0.85)' },
+                        { label: 'Loop-nodes', data: loops, backgroundColor: 'rgba(16,185,129,0.85)' },
+                        { label: 'Other nodes', data: others, backgroundColor: 'rgba(79,70,229,0.65)' }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    scales: { x: { stacked: true }, y: { stacked: true } },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            mkChart('bubbleChart', {
+                type: 'bubble',
+                data: {
+                    datasets: funcs.map((f, i) => ({
+                        label: f.name,
+                        data: [{ x: depth[i], y: cc[i], r: Math.max(5, nodes[i] / 5) }],
+                        backgroundColor: `hsla(${(i * 67) % 360},70%,55%,0.7)`
+                    }))
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: { title: { display: true, text: 'Max AST Depth' } },
+                        y: { title: { display: true, text: 'Cyclomatic Complexity' } }
+                    },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            mkChart('doughnutChart', {
+                type: 'doughnut',
+                data: {
+                    labels: ['Clean', 'High Complexity (CC>5)', 'Vulnerable'],
+                    datasets: [{
+                        data: [Math.max(0, clean), highCC, vuln],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} functions` } }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            const riskScore = funcs.map((f, i) => ({
+                name: f.name,
+                score: cc[i] + (f.security.has_vulnerabilities ? 10 : 0),
+                vuln: f.security.has_vulnerabilities
+            })).sort((a, b) => b.score - a.score);
+
+            mkChart('waterfallChart', {
+                type: 'bar',
+                data: {
+                    labels: riskScore.map(r => r.name),
+                    datasets: [{
+                        label: 'Risk Score',
+                        data: riskScore.map(r => r.score),
+                        backgroundColor: riskScore.map(r => r.vuln ? '#ef4444' : r.score > 5 ? '#f59e0b' : '#10b981'),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Risk Score' } } }
+                }
+            });
+
+            mkChart('lineChart', {
+                type: 'line',
+                data: {
+                    labels: names,
+                    datasets: [
+                        {
+                            label: 'Cyclomatic Complexity',
+                            data: cc, borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.1)',
+                            tension: 0.4, fill: true, pointRadius: 5
+                        },
+                        {
+                            label: 'Max Depth',
+                            data: depth, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.08)',
+                            tension: 0.4, fill: true, pointRadius: 5, borderDash: [4, 4]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            // 6 · Security Violation Breakdown
+            const violations = {};
+            funcs.forEach(f => {
+                f.security.issues.forEach(issue => {
+                    const type = issue.message.split(':')[0] || 'Unknown';
+                    violations[type] = (violations[type] || 0) + 1;
+                });
+            });
+            const vLabels = Object.keys(violations);
+            const vData = Object.values(violations);
+
+            mkChart('violationChart', {
+                type: 'bar',
+                data: {
+                    labels: vLabels,
+                    datasets: [{
+                        label: 'Violations',
+                        data: vData,
+                        backgroundColor: '#ef4444',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, title: { display: true, text: 'Frequency' } } }
+                }
+            });
+
         }
     </script>
 </body>
+
 </html>

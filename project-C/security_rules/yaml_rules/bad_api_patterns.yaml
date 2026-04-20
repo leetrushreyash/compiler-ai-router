@@ -1,0 +1,10 @@
+id: banned_gets
+node_type: call_expression
+match:
+  child_index: 0
+  child_type: identifier
+  in: ['gets', 'system']
+message: "Security Risk: Banned function '{matched_text}' used."
+type: Security
+fix:
+  gets: "fgets"

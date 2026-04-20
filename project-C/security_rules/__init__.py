@@ -21,7 +21,7 @@ def get_security_rules():
     from .uninitialized_variable_rule import UninitializedVariableRule
     from .insecure_threading_rule import InsecureThreadingRule
     
-    return [
+    rules = [
         BannedApiRule(), 
         MemoryLeakRule(), 
         FormatStringRule(),
@@ -35,6 +35,14 @@ def get_security_rules():
         UninitializedVariableRule(),
         InsecureThreadingRule()
     ]
+    
+    from .yaml_rule_parser import load_yaml_rules
+    import os
+    yaml_dir = os.path.join(os.path.dirname(__file__), 'yaml_rules')
+    yaml_rules = load_yaml_rules(yaml_dir)
+    rules.extend(yaml_rules)
+    
+    return rules
 
 def run_security_scans(root_node, code):
     """
