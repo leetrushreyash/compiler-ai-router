@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, Legend,
 } from 'recharts';
-import { Info, Zap } from 'lucide-react';
+import { Info, Zap, Leaf } from 'lucide-react';
 import type { AnalysisReport } from '../types';
 
 interface Props {
@@ -12,12 +12,33 @@ interface Props {
 
 const COLORS = ['#6366f1', '#22d3ee', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6', '#f97316'];
 
+function Card({ label, value, color, icon: Icon }: { label: string; value: string | number; color: string; icon?: any }) {
+  return (
+    <div className="bg-surface-800 border border-gray-700/50 rounded-xl p-4 flex flex-col justify-center">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">{label}</span>
+        {Icon && <Icon size={14} className={color} />}
+      </div>
+      <span className={`text-xl font-bold ${color}`}>{value}</span>
+    </div>
+  );
+}
+
+function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-surface-800 border border-gray-700/50 rounded-xl p-5">
+      <h3 className="text-sm font-semibold text-gray-200 mb-4">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
 export default function Energy({ report }: Props) {
   if (!report?.energy) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-gray-500 gap-3">
         <Info size={40} />
-        <p>Run analysis to see energy metrics.</p>
+        <p>Run analysis to see energy metrics and carbon footprint.</p>
       </div>
     );
   }
@@ -92,23 +113,25 @@ export default function Energy({ report }: Props) {
         </div>
       </div>
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* Summary cards row 1 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <Card label="Total Energy" value={`${e.estimated_energy_joules.toFixed(4)} J`} color="text-yellow-400" />
+        <Card label="Carbon Footprint" value={`${Math.max((e.carbon_emissions_g_co2 || 0) * 1000000, 0.01).toFixed(2)} µg CO₂`} color="text-emerald-400" icon={Leaf} />
         <Card label="Wall Time" value={`${e.wall_time_s.toFixed(3)} s`} color="text-cyan-400" />
         <Card label="CPU Time" value={`${e.cpu_time_s.toFixed(3)} s`} color="text-brand-500" />
-        <Card label="Peak Memory" value={`${e.peak_memory_mb.toFixed(1)} MB`} color="text-emerald-400" />
       </div>
 
+      {/* Summary cards row 2 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Card label="Avg CPU %" value={`${e.avg_cpu_percent.toFixed(1)}%`} color="text-orange-400" />
         <Card label="Energy / File" value={`${e.energy_per_file.toFixed(6)} J`} color="text-purple-400" />
         <Card label="Energy / Smell" value={`${e.energy_per_smell.toFixed(6)} J`} color="text-pink-400" />
-        <Card
-          label="Measurement"
-          value={e.rapl_available ? 'Hardware RAPL' : 'Software TDP'}
-          color={e.rapl_available ? 'text-green-400' : 'text-yellow-400'}
-        />
+        <div className="bg-surface-800 border border-gray-700/50 rounded-xl p-4 flex flex-col justify-center">
+          <span className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Measurement</span>
+          <span className={`text-xl font-bold ${e.rapl_available ? 'text-green-400' : 'text-yellow-400'}`}>
+            {e.rapl_available ? 'Hardware RAPL' : 'Software TDP'}
+          </span>
+        </div>
       </div>
 
       {/* Charts row */}
@@ -155,24 +178,6 @@ export default function Energy({ report }: Props) {
           </BarChart>
         </ResponsiveContainer>
       </ChartCard>
-    </div>
-  );
-}
-
-function Card({ label, value, color }: { label: string; value: string | number; color: string }) {
-  return (
-    <div className="bg-surface-800 border border-gray-700/50 rounded-xl p-4">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className={`text-xl font-bold ${color}`}>{value}</p>
-    </div>
-  );
-}
-
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-surface-800 border border-gray-700/50 rounded-xl p-5">
-      <h4 className="text-sm font-semibold text-gray-300 mb-4">{title}</h4>
-      {children}
     </div>
   );
 }

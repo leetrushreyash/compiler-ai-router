@@ -1,5 +1,6 @@
 import os
 import sys
+import ast
 from flask import Flask, render_template, request, jsonify
 
 # Add the parent directory and codes directory to path
@@ -110,6 +111,70 @@ def get_energy_from_project_a():
     finally:
         if os.path.exists(temp_file):
             os.remove(temp_file)
+
+def analyze_python_security(code):
+    issues = []
+    try:
+        tree = ast.parse(code)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Name):
+                    if node.func.id in ['eval', 'exec', 'system']:
+                        issues.append({
+                            "type": "Dangerous Function",
+                            "severity": "Critical",
+                            "description": f"Use of {node.func.id}() can lead to remote code execution."
+                        })
+                elif isinstance(node.func, ast.Attribute):
+                    if hasattr(node.func.value, 'id') and node.func.value.id in ['os', 'subprocess'] and node.func.attr in ['execute', 'run', 'popen', 'system']:
+                        issues.append({
+                            "type": "Command Injection",
+                            "severity": "High",
+                            "description": f"Use of {node.func.value.id}.{node.func.attr}() may allow OS command injection."
+                        })
+    except SyntaxError as e:
+        issues.append({"type": "Syntax Error", "severity": "Medium", "description": str(e)})
+    return issues
+
+@app.route('/api/cross-project/security', methods=['POST'])
+def get_security_analysis():
+    data = request.json or {}
+    code = data.get("code", "")
+    filename = data.get("filename", "unknown.py")
+    
+    if not code.strip():
+        return jsonify({"error": "Code input is empty."}), 400
+
+    # Polyglot routing: Check file extension
+    if filename.endswith(".py"):
+        issues = analyze_python_security(code)
+        return jsonify({"security_issues": issues, "engine": "python-ast-security"})
+    else:
+        temp_file = "temp_security_" + os.path.basename(filename)
+        try:
+            with open(temp_file, "w", encoding="utf-8") as f:
+                f.write(code)
+            
+            ast_results = analyze_file(temp_file)
+            
+            issues = []
+            if "functions" in ast_results:
+                for fn in ast_results["functions"]:
+                    if fn.get("security", {}).get("has_vulnerabilities"):
+                        for issue in fn["security"].get("issues", []):
+                            issues.append({
+                                "type": issue.get("type", "Unknown"),
+                                "severity": issue.get("severity", "High"),
+                                "description": issue.get("description", ""),
+                                "function": fn.get("name", "Unknown")
+                            })
+                            
+            return jsonify({"security_issues": issues, "engine": "cpp-ast-security"})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        finally:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
 
 if __name__ == '__main__':
     print("Starting Advanced AST Flask Server at http://127.0.0.1:5001")

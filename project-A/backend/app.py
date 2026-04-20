@@ -30,7 +30,25 @@ from code_smell_compiler.refactoring.engine import generate_refactorings
 from code_smell_compiler.correlation.analyzer import full_correlation_analysis
 from code_smell_compiler.ml_model.explainable import explain_prediction
 from code_smell_compiler.neuro_symbolic import build_neuro_symbolic_analysis
+import requests
 from backend.energy import EnergyCollector
+
+# ══════════════════════════════════════════════════════════════════════════
+# Security Cross-Project Integration
+# ══════════════════════════════════════════════════════════════════════════
+def get_security_verdict(code_text: str, filename: str) -> list:
+    """Fetch security evaluation from Project C."""
+    try:
+        response = requests.post(
+            "http://localhost:5001/api/cross-project/security", 
+            json={"code": code_text, "filename": filename},
+            timeout=5
+        )
+        if response.status_code == 200:
+            return response.json().get("security_issues", [])
+    except Exception as e:
+        return [{"error": "Project C (Security Service) is offline or failed", "details": str(e)}]
+    return [{"error": f"Project C returned status {response.status_code if 'response' in locals() else 'Unknown'}"}]
 
 # ══════════════════════════════════════════════════════════════════════════
 # App setup
@@ -463,6 +481,16 @@ def analyze_examples(payload: ExamplesPayload):
         raise HTTPException(400, "No valid example files selected")
     report = _run_full_analysis(paths, payload.options)
     return JSONResponse(report)
+
+
+@app.post("/api/cross-project/security")
+def cross_project_security(payload: CodePayload):
+    """Explicitly proxy code to Project C for Security evaluation when requested."""
+    if not payload.code.strip():
+        raise HTTPException(400, "Code input is empty.")
+    
+    security_eval = get_security_verdict(payload.code, payload.filename)
+    return JSONResponse({"security_issues": security_eval})
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────

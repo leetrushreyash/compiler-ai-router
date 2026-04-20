@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import CodeViewer from './pages/CodeViewer';
 import Correlations from './pages/Correlations';
 import Energy from './pages/Energy';
+import Security from './pages/Security'; // New Security audit module
 import Performance from './pages/Performance';
 import Refactoring from './pages/Refactoring';
 import Coverage from './pages/Coverage';
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/code" element={<CodeViewer report={report} />} />
           <Route path="/correlations" element={<Correlations report={report} />} />
           <Route path="/energy" element={<Energy report={report} />} />
+          <Route path="/security" element={<Security report={report} />} />
           <Route path="/performance" element={<Performance report={report} />} />
           <Route path="/neuro-symbolic" element={<NeuroSymbolic report={report} />} />
           <Route path="/refactoring" element={<Refactoring report={report} />} />

@@ -658,6 +658,31 @@ def create_app() -> Flask:
             # If A is down, B doesn't break
             return jsonify({"error": "Energy service (Project A) is currently offline."}), 503
 
+    @app.post("/api/cross-project/security")
+    def get_security_from_project_c():
+        payload = request.get_json(silent=True) or {}
+        code = payload.get("code", "")
+        source_name = payload.get("filename", "inline_input.py")
+        
+        if not code.strip():
+            return jsonify({"error": "Code input is empty."}), 400
+
+        import requests
+        try:
+            # Ask Project C for the security data
+            response = requests.post(
+                "http://localhost:5001/api/cross-project/security", 
+                json={"code": code, "filename": source_name},
+                timeout=5
+            )
+            if response.status_code == 200:
+                data = response.json()
+                return jsonify({"security_issues": data.get("security_issues", []), "engine": data.get("engine", "unknown")})
+            else:
+                return jsonify({"error": f"Project C returned status {response.status_code}"}), 500
+        except requests.exceptions.ConnectionError:
+            return jsonify({"error": "Security service (Project C) is currently offline."}), 503
+
     return app
 
 

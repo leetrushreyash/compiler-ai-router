@@ -32,3 +32,8 @@ export async function analyzeExamples(filenames: string[]): Promise<AnalysisRepo
   const res = await api.post('/analyze/examples', { filenames });
   return res.data;
 }
+
+export async function fetchSecurityAudit(code: string, filename: string = 'untitled.py'): Promise<any[]> {
+  const res = await api.post('/cross-project/security', { code, filename });
+  return res.data.security_issues;
+}

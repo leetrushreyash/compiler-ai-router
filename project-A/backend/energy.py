@@ -30,6 +30,7 @@ class EnergyReport:
     peak_memory_mb: float = 0.0
     avg_cpu_percent: float = 0.0
     estimated_energy_joules: float = 0.0
+    carbon_emissions_g_co2: float = 0.0
     rapl_available: bool = False
     rapl_energy_joules: Optional[float] = None
     readings: List[Dict] = field(default_factory=list)
@@ -115,12 +116,25 @@ class EnergyCollector:
 
         estimated = rapl_j if rapl_j is not None else _estimate_energy_joules(cpu, avg_cpu)
 
+        # Assuming global average carbon intensity: ~475 grams of CO2 per kWh.
+        # 1 Joule = 1 / 3,600,000 kWh.
+        # 475 / 3,600,000 = 0.00013194 g CO2 per Joule
+        # Add PUE (Power Usage Effectiveness) of average data center ~ 1.5
+        CARBON_INTENSITY_G_CO2_PER_JOULE = 0.00013194 * 1.5
+        
+        # Prevent zero-emission display for ultra-fast executions (minimum 1ms cpu time assumed)
+        min_cpu = max(cpu, 0.001)
+        min_estimated = rapl_j if rapl_j is not None else _estimate_energy_joules(min_cpu, max(avg_cpu, 1.0))
+        
+        carbon_emissions = min_estimated * CARBON_INTENSITY_G_CO2_PER_JOULE
+
         return EnergyReport(
             wall_time_s=round(wall, 4),
             cpu_time_s=round(cpu, 4),
             peak_memory_mb=round(self._peak_mem, 2),
             avg_cpu_percent=round(avg_cpu, 2),
             estimated_energy_joules=round(estimated, 6),
+            carbon_emissions_g_co2=round(carbon_emissions, 10),
             rapl_available=rapl_ok,
             rapl_energy_joules=round(rapl_j, 6) if rapl_j is not None else None,
             readings=[

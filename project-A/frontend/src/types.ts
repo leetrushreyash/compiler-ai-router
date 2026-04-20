@@ -104,6 +104,7 @@ export interface EnergyReport {
   peak_memory_mb: number;
   avg_cpu_percent: number;
   estimated_energy_joules: number;
+  carbon_emissions_g_co2: number;
   rapl_available: boolean;
   rapl_energy_joules: number | null;
   readings: { t: number; cpu: number; mem: number }[];
@@ -122,6 +123,7 @@ export interface AnalysisReport {
   prioritized_findings?: PrioritizedFinding[];
   neuro_symbolic_analysis?: NeuroSymbolicAnalysis;
   energy?: EnergyReport;
+  security_evaluation?: any;
 }
 
 export interface ExampleFile {
