@@ -67,9 +67,10 @@ def extract_features():
                 if_nodes = 0
                 loop_nodes = 0
                 max_depth = 0
+                param_count = 0
                 
                 def extract_structural(node, current_depth):
-                    nonlocal total_nodes, if_nodes, loop_nodes, max_depth
+                    nonlocal total_nodes, if_nodes, loop_nodes, max_depth, param_count
                     total_nodes += 1
                     max_depth = max(max_depth, current_depth)
                     
@@ -77,6 +78,8 @@ def extract_features():
                         if_nodes += 1
                     elif node.type in ['for_statement', 'while_statement', 'do_statement']:
                         loop_nodes += 1
+                    elif node.type == 'parameter_list':
+                        param_count = sum(1 for c in node.children if c.type in ['parameter_declaration', 'variadic_parameter_declaration'])
                         
                     for child in node.children:
                         extract_structural(child, current_depth + 1)
@@ -90,6 +93,7 @@ def extract_features():
                     'AST_IfCount': if_nodes,
                     'AST_LoopCount': loop_nodes,
                     'AST_MaxDepth': max_depth,
+                    'AST_ParamCount': param_count,
                     'Smell_Label': row['Smell_Label']
                 })
 
