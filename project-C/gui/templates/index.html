@@ -361,8 +361,12 @@
                 <label for="folder-upload" class="upload-btn" style="margin-left: 10px;">Upload Directory</label>
                 <input type="file" id="folder-upload" accept=".cpp,.h,.c" webkitdirectory directory>
 
-                <button class="primary" style="margin-left:auto;" onclick="analyzeCode()">Analyze Extracted Metrics</button>
+                <div style="display:flex; margin-left:auto; gap:8px;">
+                    <button class="primary" onclick="analyzeCode()">Analyze Extracted Metrics</button>
+                    <button class="primary" style="background:#5b21b6;" onclick="assessEnergy()">Assess Energy</button>
+                </div>
             </div>
+            <div id="energyResult" style="margin-top: 1rem; font-size: 0.85rem; background: #e0e7ff; padding: 0.5rem; border-radius: 4px; display: none;"></div>
         </div>
 
         <!-- Right Nav Panel -->
@@ -631,6 +635,56 @@
                 alert("Server error. Is the Flask app running?");
             } finally {
                 document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        async function assessEnergy() {
+            let code = editor.getValue();
+            let filename = "inline_input.cpp";
+            
+            if (uploadedFiles.length > 0 && currentFileIndex >= 0) {
+                code = uploadedFiles[currentFileIndex].code;
+                filename = uploadedFiles[currentFileIndex].name;
+            }
+
+            if (!code.trim()) {
+                alert("Please drop some code first to assess energy!");
+                return;
+            }
+
+            const resultDiv = document.getElementById("energyResult");
+            resultDiv.style.display = 'none';
+            resultDiv.textContent = 'Asking Project A...';
+            resultDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/cross-project/energy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, filename })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.textContent = `Cross-project API call failed: ${data.error}`;
+                } else if (data.energy && data.energy.energy_per_file !== undefined) {
+                    const jVal = data.energy.estimated_energy_joules || data.energy.energy_per_file;
+                    let html = `<strong>Energy via Project A API:</strong> ${jVal} J estimated total.<br>`;
+                    
+                    if (data.energy.energy_per_smell) {
+                        html += `<strong>Avg Energy per Smell:</strong> ${data.energy.energy_per_smell} J<br>`;
+                    }
+                    if (data.energy.phases) {
+                        html += `<strong>Parsing Phase:</strong> ${data.energy.phases.parsing || 0} J<br>`;
+                    }
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.textContent = "No valid energy metrics matched.";
+                }
+            } catch (err) {
+                console.error("Energy API error:", err);
+                resultDiv.textContent = "Cross-project API call failed: connection error.";
             }
         }
 

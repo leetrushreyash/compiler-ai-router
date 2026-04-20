@@ -5,7 +5,10 @@ from flask import Flask, render_template, request, jsonify
 # Add the parent directory and codes directory to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'codes')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'project-A')))
+
 from unified_analyzer import analyze_file
+from backend.energy import EnergyCollector
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -63,6 +66,50 @@ def analyze():
         "batch_results": batch_results,
         "is_smelly": has_critical
     })
+
+@app.route('/api/cross-project/energy', methods=['POST'])
+def get_energy_from_project_a():
+    data = request.json or {}
+    code = data.get("code", "")
+    filename = data.get("filename", "inline_input.cpp")
+    
+    if not code.strip():
+        return jsonify({"error": "Code input is empty."}), 400
+
+    temp_file = "temp_energy_" + os.path.basename(filename)
+    try:
+        with open(temp_file, "w", encoding="utf-8") as f:
+            f.write(code)
+            
+        collector = EnergyCollector()
+        collector.start()
+        collector.begin_phase("parsing")
+        
+        ast_results = analyze_file(temp_file)
+        
+        collector.end_phase()
+        energy_report = collector.stop()
+        energy_data = energy_report.to_dict()
+        
+        n_smells = 0
+        if "functions" in ast_results:
+            for fn in ast_results["functions"]:
+                if fn.get("security", {}).get("has_vulnerabilities"):
+                    n_smells += len(fn["security"].get("issues", []))
+                if fn.get("code_smell", {}).get("is_smelly"):
+                    n_smells += 1
+                    
+        total_e = energy_data.get("estimated_energy_joules", 0.0)
+        energy_data["energy_per_file"] = total_e
+        energy_data["energy_per_smell"] = round(total_e / max(n_smells, 1), 6)
+        
+        return jsonify({"energy": energy_data})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
 
 if __name__ == '__main__':
     print("Starting Advanced AST Flask Server at http://127.0.0.1:5001")
