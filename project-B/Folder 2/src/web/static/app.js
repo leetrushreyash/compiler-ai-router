@@ -11,6 +11,7 @@ const elements = {
   selectAllBtn: document.getElementById("selectAllBtn"),
   clearAllBtn: document.getElementById("clearAllBtn"),
   analyzeCodeBtn: document.getElementById("analyzeCodeBtn"),
+  crossEnergyBtn: document.getElementById("crossEnergyBtn"),
   analyzeFilesBtn: document.getElementById("analyzeFilesBtn"),
   recommendModelBtn: document.getElementById("recommendModelBtn"),
   codeInput: document.getElementById("codeInput"),
@@ -575,6 +576,53 @@ elements.analyzeCodeBtn.addEventListener("click", async () => {
     alert(error.message);
   } finally {
     setButtonLoading(elements.analyzeCodeBtn, "", false);
+  }
+});
+
+elements.crossEnergyBtn.addEventListener("click", async () => {
+  const code = elements.codeInput.value;
+  const filename = elements.virtualFilename.value || "inline_input.py";
+  const resultDiv = document.getElementById("energyResult");
+
+  if (!code.trim()) {
+    alert("Paste code before asking for energy data.");
+    return;
+  }
+
+  setButtonLoading(elements.crossEnergyBtn, "Asking Project A...", true);
+  resultDiv.style.display = 'none';
+  resultDiv.textContent = '';
+  
+  try {
+    const data = await callApi("/api/cross-project/energy", {
+      code,
+      filename,
+    });
+    
+    if (data.energy && data.energy.energy_per_file !== undefined) {
+      const jVal = data.energy.estimated_energy_joules || data.energy.energy_per_file;
+      let html = `<strong>Energy via Project A API:</strong> ${jVal} J estimated total.<br>`;
+      
+      if (data.energy.energy_per_smell) {
+        html += `<strong>Avg Energy per Smell:</strong> ${data.energy.energy_per_smell} J<br>`;
+      }
+      
+      if (data.energy.phases) {
+         html += `<strong>Parsing Phase:</strong> ${data.energy.phases.parsing || 0} J<br>`;
+      }
+      
+      resultDiv.innerHTML = html;
+      resultDiv.style.display = 'block';
+    } else {
+      resultDiv.textContent = "No valid energy metrics matched.";
+      resultDiv.style.display = 'block';
+    }
+  } catch (error) {
+    resultDiv.textContent = `Cross-project API call failed: ${error.message}`;
+    resultDiv.style.display = 'block';
+    console.error("Energy API error:", error);
+  } finally {
+    setButtonLoading(elements.crossEnergyBtn, "", false);
   }
 });
 

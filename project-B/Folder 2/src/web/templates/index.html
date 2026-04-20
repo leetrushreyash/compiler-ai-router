@@ -156,7 +156,11 @@
             Python code
             <textarea id="codeInput" rows="12" placeholder="Paste Python code here..."></textarea>
           </label>
-          <button id="analyzeCodeBtn" class="action-btn">Analyze Code</button>
+          <div style="display: flex; gap: 8px;">
+            <button id="analyzeCodeBtn" class="action-btn">Analyze Code</button>
+            <button id="crossEnergyBtn" class="action-btn" style="background:#5b21b6;">Assess Energy (via Project A)</button>
+          </div>
+          <div id="energyResult" style="margin-top: 1rem; font-size: 0.85rem; background: #e0e7ff; padding: 0.5rem; border-radius: 4px; display: none;"></div>
         </div>
 
         <div id="samplesMode" class="mode-panel">

@@ -62,7 +62,7 @@ def _read_rapl_uj() -> Optional[int]:
 # ---------------------------------------------------------------------------
 # TDP-estimation fallback (works on Windows / macOS / Linux without RAPL)
 # ---------------------------------------------------------------------------
-_ESTIMATED_TDP_WATTS = 15.0  # conservative laptop TDP
+_ESTIMATED_TDP_WATTS = 28.0  # conservative laptop TDP
 
 
 def _estimate_energy_joules(cpu_time_s: float, avg_cpu_pct: float) -> float:

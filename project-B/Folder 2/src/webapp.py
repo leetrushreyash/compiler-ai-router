@@ -633,6 +633,31 @@ def create_app() -> Flask:
             }
         )
 
+    @app.post("/api/cross-project/energy")
+    def get_energy_from_project_a():
+        payload = request.get_json(silent=True) or {}
+        code = payload.get("code", "")
+        source_name = payload.get("filename", "inline_input.py")
+        
+        if not code.strip():
+            return jsonify({"error": "Code input is empty."}), 400
+
+        import requests
+        try:
+            # Ask Project A for the data
+            response = requests.post(
+                "http://localhost:8000/api/analyze/code", 
+                json={"code": code, "filename": source_name}
+            )
+            if response.status_code == 200:
+                data = response.json()
+                return jsonify({"energy": data.get("energy", {})})
+            else:
+                return jsonify({"error": f"Project A returned status {response.status_code}"}), 500
+        except requests.exceptions.ConnectionError:
+            # If A is down, B doesn't break
+            return jsonify({"error": "Energy service (Project A) is currently offline."}), 503
+
     return app
 
 

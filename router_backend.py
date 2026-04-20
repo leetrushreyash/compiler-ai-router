@@ -34,7 +34,7 @@ TARGET B (Refactoring & Code Smells for PYTHON ONLY):
 - NEVER choose B if the prompt mentions C, C++, or other languages. Project B is strictly Python-only.
 
 TARGET C (C/C++ Analysis & Security):
-- Choose C if prompt mentions: "C/C++", "C++ code smells", "security audits", "memory leak", "buffer overflow", "pointers", or "vulnerability".
+- Choose C if prompt mentions: "C/C++/c++/c", "C++ code smells",  "c++ code smells",  "c code smells", "security audits", "memory leak", "buffer overflow", "pointers", or "vulnerability".
 - ANY request involving C or C++ code must go to C.
 
 RETURN STRICTLY JSON IN THIS EXACT FORMAT:
